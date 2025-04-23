@@ -1,10 +1,9 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard as DashboardIcon,
   Users as EmployeesIcon,
   UserCheck as AttendanceIcon,
-  LogIn as LoginIcon,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -23,6 +22,16 @@ const navItems = [
 ];
 
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const navigate = useNavigate();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    // Close sidebar on mobile after navigation
+    if (window.innerWidth < 768) {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <>
       {isOpen && (
@@ -33,8 +42,8 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       )}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-20 h-full bg-white border-r transition-all duration-300 transform",
-          isOpen ? "w-64 translate-x-0" : "w-20 -translate-x-0 md:translate-x-0"
+          "fixed top-0 left-0 z-20 h-full bg-white border-r transition-all duration-300 ease-in-out transform",
+          isOpen ? "w-72 translate-x-0" : "w-20 -translate-x-0 md:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
@@ -43,7 +52,12 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
                 S
               </div>
-              <span className={cn("ml-2 font-semibold text-gray-800", !isOpen && "hidden")}>Sheet Savvy</span>
+              <span className={cn(
+                "ml-2 font-semibold text-gray-800 transition-opacity duration-300",
+                isOpen ? "opacity-100" : "opacity-0 hidden"
+              )}>
+                Sheet Savvy
+              </span>
             </div>
             <Button
               variant="ghost"
@@ -55,33 +69,27 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             </Button>
           </div>
 
-          {/* Nav links */}
           <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
             {navItems.map((item) => (
-              <Link
+              <button
                 key={item.path}
-                to={item.path}
+                onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors",
+                  "w-full flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-all duration-200",
                   "text-gray-700 hover:text-gray-900",
                   window.location.pathname === item.path ? "bg-gray-100 font-medium" : ""
                 )}
               >
                 <item.icon size={20} className="flex-shrink-0" />
-                <span className={cn("ml-3 text-sm", !isOpen && "hidden")}>
+                <span className={cn(
+                  "ml-3 text-sm whitespace-nowrap transition-opacity duration-300",
+                  isOpen ? "opacity-100" : "opacity-0 hidden md:block md:opacity-0"
+                )}>
                   {item.name}
                 </span>
-              </Link>
+              </button>
             ))}
           </nav>
-
-          {/* Sidebar footer (optional, could be login link later) */}
-          {/* <div className={cn("p-4 border-t", !isOpen && "md:hidden")}>
-            <Link to="/login" className="flex items-center text-gray-700 hover:text-blue-600">
-              <LoginIcon size={18} />
-              <span className={cn("ml-2 text-sm", !isOpen && "hidden")}>Login</span>
-            </Link>
-          </div> */}
         </div>
       </aside>
     </>

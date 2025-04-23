@@ -14,8 +14,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <div className={cn("flex-1 flex flex-col transition-all", 
-        sidebarOpen ? "md:ml-64" : "md:ml-20"
+      <div className={cn(
+        "flex-1 flex flex-col transition-all duration-300 ease-in-out", 
+        sidebarOpen ? "md:ml-72" : "md:ml-20"
       )}>
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 p-4 md:p-6 overflow-auto">
