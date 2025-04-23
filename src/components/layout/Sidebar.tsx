@@ -1,11 +1,10 @@
 
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Table, 
-  BarChart, 
-  Settings, 
+import {
+  LayoutDashboard as DashboardIcon,
+  Users as EmployeesIcon,
+  UserCheck as AttendanceIcon,
+  LogIn as LoginIcon,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -17,25 +16,21 @@ interface SidebarProps {
   setIsOpen: (open: boolean) => void;
 }
 
-const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
-  const navItems = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
-    { name: "Data Tables", path: "/tables", icon: Table },
-    { name: "Analytics", path: "/analytics", icon: BarChart },
-    { name: "Settings", path: "/settings", icon: Settings },
-  ];
+const navItems = [
+  { name: "Dashboard", path: "/", icon: DashboardIcon },
+  { name: "Employees", path: "/employees", icon: EmployeesIcon },
+  { name: "Attendance", path: "/attendance", icon: AttendanceIcon },
+];
 
+const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   return (
     <>
-      {/* Mobile overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-10 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
-      
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed top-0 left-0 z-20 h-full bg-white border-r transition-all duration-300 transform",
@@ -43,7 +38,6 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Sidebar header */}
           <div className="h-16 flex items-center justify-between px-4 border-b">
             <div className={cn("flex items-center", !isOpen && "md:hidden")}>
               <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
@@ -60,7 +54,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
             </Button>
           </div>
-          
+
           {/* Nav links */}
           <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
             {navItems.map((item) => (
@@ -80,19 +74,14 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               </Link>
             ))}
           </nav>
-          
-          {/* Sidebar footer */}
-          <div className={cn("p-4 border-t", !isOpen && "md:hidden")}>
-            <div className="flex items-center">
-              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                U
-              </div>
-              <div className={cn("ml-2", !isOpen && "hidden")}>
-                <div className="text-sm font-medium text-gray-800">User Name</div>
-                <div className="text-xs text-gray-500">user@example.com</div>
-              </div>
-            </div>
-          </div>
+
+          {/* Sidebar footer (optional, could be login link later) */}
+          {/* <div className={cn("p-4 border-t", !isOpen && "md:hidden")}>
+            <Link to="/login" className="flex items-center text-gray-700 hover:text-blue-600">
+              <LoginIcon size={18} />
+              <span className={cn("ml-2 text-sm", !isOpen && "hidden")}>Login</span>
+            </Link>
+          </div> */}
         </div>
       </aside>
     </>
