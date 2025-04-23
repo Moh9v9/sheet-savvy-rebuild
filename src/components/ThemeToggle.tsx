@@ -15,15 +15,18 @@ export function ThemeToggle() {
 
   if (!mounted) return null;
 
+  // Force theme type to either 'dark' or 'light' to ensure proper toggling
+  const currentTheme = theme === 'dark' ? 'dark' : 'light';
+
   return (
     <Button
       variant="ghost"
       size="icon"
       className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-primary/10"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+      aria-label={`Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} mode`}
     >
-      {theme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
+      {currentTheme === "dark" ? <Moon size={20} /> : <Sun size={20} />}
     </Button>
   );
 }
