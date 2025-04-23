@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,6 +43,14 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart colors */
+    --text-color: #4B5563;
+    --border-color: #D1D5DB;
+    --grid-color: #E5E7EB;
+    --tooltip-bg: #FFFFFF;
+    --tooltip-border: #E5E7EB;
+    --tooltip-text: #1F2937;
   }
 
   .dark {
@@ -81,6 +90,14 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Chart colors for dark mode */
+    --text-color: #D1D5DB;
+    --border-color: #4B5563;
+    --grid-color: #374151;
+    --tooltip-bg: #1F2937;
+    --tooltip-border: #374151;
+    --tooltip-text: #F9FAFB;
   }
 }
 
@@ -91,6 +108,7 @@
 
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -130,4 +148,57 @@
   .stats-label {
     @apply text-sm text-muted-foreground;
   }
+}
+
+/* RTL Support */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+.rtl .ml-3 {
+  margin-left: 0;
+  margin-right: 0.75rem;
+}
+
+.rtl .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+.rtl .right-0 {
+  right: auto;
+  left: 0;
+}
+
+.rtl .left-0 {
+  left: auto;
+  right: 0;
+}
+
+/* Transition styles for theme switching */
+.theme-transition {
+  transition: all 0.3s ease;
+}
+
+/* Animation for loading skeletons */
+@keyframes skeleton-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.animate-skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }

@@ -5,7 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAttendanceData } from "@/hooks/useAttendanceData";
-import { CalendarIcon, Filter, Search, Plus, Download } from "lucide-react";
+import { 
+  CalendarIcon, Filter, Search, Plus, Download,
+  ArrowUp, ArrowDown, Users, UserCheck, UserX, Percent
+} from "lucide-react";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
 import AddAttendanceModal from "@/components/attendance/AddAttendanceModal";
 import ExportAttendanceButton from "@/components/attendance/ExportAttendanceButton";
@@ -14,6 +17,12 @@ import { useAttendanceFilters } from "@/hooks/useAttendanceFilters";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { 
+  AttendanceOverview,
+  DepartmentBreakdown, 
+  AttendanceChart
+} from "@/components/dashboard";
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -48,12 +57,10 @@ const Dashboard = () => {
   // Create wrapper functions that convert Promise<boolean> to Promise<void>
   const handleEditAttendance = async (id: string, data: Partial<Attendance>) => {
     await editAttendanceRecord(id, data);
-    // Return type is void
   };
 
   const handleDeleteAttendance = async (id: string) => {
     await deleteAttendanceRecord(id);
-    // Return type is void
   };
 
   // Mock user data - in a real app, this would come from authentication context
@@ -65,7 +72,7 @@ const Dashboard = () => {
   const formattedDate = format(today, "EEEE, MMMM d, yyyy");
 
   return (
-    <div className="space-y-6 dark:bg-gray-900 p-6 min-h-screen">
+    <div className="space-y-6 dark:bg-gray-900 min-h-screen">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
         <div>
           <h1 className="text-3xl font-bold tracking-tight dark:text-white">Dashboard</h1>
@@ -80,28 +87,121 @@ const Dashboard = () => {
 
       {/* Attendance Stats */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-blue-500">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Total Employees</span>
-            <span className="text-2xl font-bold dark:text-white">{employees.length}</span>
+        {loading ? (
+          // Skeleton loading for stats
+          <>
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i} className="p-4 dark:bg-gray-800">
+                <div className="flex flex-col gap-2">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-8 w-12" />
+                </div>
+              </Card>
+            ))}
+          </>
+        ) : (
+          <>
+            <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-blue-500 transition-transform hover:scale-[1.02] hover:shadow-lg">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Total Employees</span>
+                  <span className="text-2xl font-bold dark:text-white">{employees.length}</span>
+                </div>
+                <div className="p-2 bg-blue-500/10 text-blue-500 rounded-full">
+                  <Users size={20} />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm text-green-500">
+                <ArrowUp className="mr-1" size={16} />
+                <span>5% from last month</span>
+              </div>
+            </Card>
+
+            <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-green-500 transition-transform hover:scale-[1.02] hover:shadow-lg">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Present Today</span>
+                  <span className="text-2xl font-bold text-green-500">{stats.present}</span>
+                </div>
+                <div className="p-2 bg-green-500/10 text-green-500 rounded-full">
+                  <UserCheck size={20} />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm">
+                <div className="flex items-center gap-1 text-gray-400 dark:text-gray-300">
+                  <Percent size={14} />
+                  <span>{employees.length ? Math.round((stats.present / employees.length) * 100) : 0}% of total</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-red-500 transition-transform hover:scale-[1.02] hover:shadow-lg">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Absent Today</span>
+                  <span className="text-2xl font-bold text-red-500">{stats.absent}</span>
+                </div>
+                <div className="p-2 bg-red-500/10 text-red-500 rounded-full">
+                  <UserX size={20} />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm text-red-500">
+                <ArrowUp className="mr-1" size={16} />
+                <span>2% from yesterday</span>
+              </div>
+            </Card>
+
+            <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-orange-500 transition-transform hover:scale-[1.02] hover:shadow-lg">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Late Today</span>
+                  <span className="text-2xl font-bold text-orange-500">{stats.late}</span>
+                </div>
+                <div className="p-2 bg-orange-500/10 text-orange-500 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm text-orange-500">
+                <ArrowDown className="mr-1" size={16} />
+                <span>3% from yesterday</span>
+              </div>
+            </Card>
+          </>
+        )}
+      </div>
+
+      {/* Data Visualization Section */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <Card className="dark:bg-gray-800 col-span-full xl:col-span-2 overflow-hidden">
+          <div className="p-6">
+            <h3 className="text-lg font-medium dark:text-white">Weekly Attendance Overview</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Attendance trends for the past 7 days</p>
+          </div>
+          <div className="px-6 pb-6">
+            <AttendanceChart />
           </div>
         </Card>
-        <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-green-500">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Present Today</span>
-            <span className="text-2xl font-bold text-green-500">{stats.present}</span>
+
+        <Card className="dark:bg-gray-800 overflow-hidden">
+          <div className="p-6">
+            <h3 className="text-lg font-medium dark:text-white">Department Breakdown</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Employee distribution by department</p>
+          </div>
+          <div className="px-6 pb-6 flex justify-center">
+            <DepartmentBreakdown />
           </div>
         </Card>
-        <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-red-500">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Absent Today</span>
-            <span className="text-2xl font-bold text-red-500">{stats.absent}</span>
+
+        <Card className="dark:bg-gray-800 col-span-full">
+          <div className="p-6">
+            <h3 className="text-lg font-medium dark:text-white">Monthly Attendance Overview</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Attendance patterns for the current month</p>
           </div>
-        </Card>
-        <Card className="p-4 dark:bg-gray-800 border-l-4 border-l-orange-500">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-muted-foreground dark:text-gray-400">Late Today</span>
-            <span className="text-2xl font-bold text-orange-500">{stats.late}</span>
+          <div className="px-6 pb-6">
+            <AttendanceOverview />
           </div>
         </Card>
       </div>
