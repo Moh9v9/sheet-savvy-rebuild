@@ -35,7 +35,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   
   return (
     <SidebarProvider defaultOpen={isOpen} open={isOpen} onOpenChange={setIsOpen}>
-      <ShadcnSidebar>
+      <ShadcnSidebar className="z-20">
         <SidebarHeader className="border-b">
           <div className={cn("flex items-center px-4 py-5")}>
             <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">

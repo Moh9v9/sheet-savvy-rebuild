@@ -9,6 +9,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
+  // Initialize sidebarOpen as false for better mobile experience
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
