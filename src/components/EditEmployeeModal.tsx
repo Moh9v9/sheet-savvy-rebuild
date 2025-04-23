@@ -27,7 +27,7 @@ export default function EditEmployeeModal({
   onSuccess,
   employee,
 }: EditEmployeeModalProps) {
-  const { form, onSubmit } = useEmployeeForm(employee, onSuccess, onOpenChange);
+  const { form, onSubmit } = useEmployeeForm({ employee, onSuccess, onOpenChange });
   const { handleSubmit, formState: { isSubmitting } } = form;
 
   return (
@@ -55,3 +55,4 @@ export default function EditEmployeeModal({
     </Dialog>
   );
 }
+
