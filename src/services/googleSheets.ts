@@ -4,9 +4,9 @@ import { Employee, EmployeeInput } from "@/types/employee";
 // روابط الـ n8n Webhook
 const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-employees";
 const N8N_USERS_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-users";
+const N8N_ATTENDANCE_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-attendance";
 
-// ====== [ أنواع البيانات ] ======
-
+// أنواع بيانات المستخدمين
 export type GoogleSheetsUser = {
   id: string;
   email: string;
@@ -15,7 +15,22 @@ export type GoogleSheetsUser = {
   [key: string]: any;
 };
 
-// ====== [ دوال الموظفين ] ======
+// أنواع بيانات الحضور
+export type Attendance = {
+  id: string;
+  date: string;
+  employee_id: string;
+  fullName: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  overtime: string;
+  note: string;
+  created_at: string;
+  updated_at: string;
+};
+
+// =========== دوال الموظفين ===========
 export async function readEmployees(): Promise<Employee[]> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
@@ -23,59 +38,27 @@ export async function readEmployees(): Promise<Employee[]> {
     body: JSON.stringify({ operation: "read" }),
   });
   const data = await res.json();
-  
-  // Handle different response formats
-  if (Array.isArray(data)) {
-    return data;
-  } else if (data && typeof data === 'object') {
-    // If response is a single employee object, convert to array
-    return [data];
-  }
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') return [data];
   return [];
 }
 
 export async function addEmployee(employeeData: EmployeeInput): Promise<any> {
-  try {
-    const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ operation: "add", ...employeeData }),
-    });
-    
-    // The n8n webhook might return various response formats
-    // We just need to know if the request was successful
-    if (res.ok) {
-      return { success: true };
-    }
-    
-    return res.json();
-  } catch (error) {
-    console.error("Error adding employee:", error);
-    throw error;
-  }
+  const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "add", ...employeeData }),
+  });
+  return await res.json();
 }
 
 export async function updateEmployee(id: string, employeeData: EmployeeInput): Promise<any> {
-  try {
-    const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        operation: "update", 
-        id,
-        ...employeeData
-      }),
-    });
-    
-    if (res.ok) {
-      return { success: true };
-    }
-    
-    return res.json();
-  } catch (error) {
-    console.error("Error updating employee:", error);
-    throw error;
-  }
+  const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "update", id, ...employeeData }),
+  });
+  return await res.json();
 }
 
 export async function deleteEmployee(id: string): Promise<any> {
@@ -84,10 +67,10 @@ export async function deleteEmployee(id: string): Promise<any> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ operation: "delete", id }),
   });
-  return res.json();
+  return await res.json();
 }
 
-// ====== [ دوال المستخدمين ] ======
+// =========== دوال المستخدمين ===========
 export async function readUsers(): Promise<GoogleSheetsUser[]> {
   const res = await fetch(N8N_USERS_WEBHOOK, {
     method: "POST",
@@ -95,14 +78,8 @@ export async function readUsers(): Promise<GoogleSheetsUser[]> {
     body: JSON.stringify({ operation: "read" }),
   });
   const data = await res.json();
-  
-  // Handle different response formats
-  if (Array.isArray(data)) {
-    return data;
-  } else if (data && typeof data === 'object') {
-    // If response is a single user object, convert to array
-    return [data];
-  }
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') return [data];
   return [];
 }
 
@@ -112,7 +89,7 @@ export async function addUser(userData: GoogleSheetsUser): Promise<any> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ operation: "add", ...userData }),
   });
-  return res.json();
+  return await res.json();
 }
 
 export async function updateUser(rowIndex: number, userData: Partial<GoogleSheetsUser>): Promise<any> {
@@ -121,7 +98,7 @@ export async function updateUser(rowIndex: number, userData: Partial<GoogleSheet
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ operation: "update", rowIndex, ...userData }),
   });
-  return res.json();
+  return await res.json();
 }
 
 export async function deleteUser(rowIndex: number): Promise<any> {
@@ -130,7 +107,7 @@ export async function deleteUser(rowIndex: number): Promise<any> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ operation: "delete", rowIndex }),
   });
-  return res.json();
+  return await res.json();
 }
 
 export async function getUserByEmailAndPassword(email: string, password: string): Promise<GoogleSheetsUser | null> {
@@ -140,11 +117,47 @@ export async function getUserByEmailAndPassword(email: string, password: string)
     body: JSON.stringify({ operation: "login", email, password }),
   });
   const data = await res.json();
-  if (Array.isArray(data) && data.length > 0) {
-    return data[0];
-  } else if (data && typeof data === 'object') {
-    // If the response is a single user object
-    return data;
-  }
+  if (Array.isArray(data) && data.length > 0) return data[0];
+  if (data && typeof data === 'object') return data;
   return null;
+}
+
+// =========== دوال الحضور ===========
+export async function readAttendance(): Promise<Attendance[]> {
+  const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "read" }),
+  });
+  const data = await res.json();
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === 'object') return [data];
+  return [];
+}
+
+export async function addAttendance(attendanceData: Omit<Attendance, "created_at" | "updated_at">): Promise<any> {
+  const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "add", ...attendanceData }),
+  });
+  return await res.json();
+}
+
+export async function updateAttendance(id: string, attendanceData: Partial<Attendance>): Promise<any> {
+  const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "update", id, ...attendanceData }),
+  });
+  return await res.json();
+}
+
+export async function deleteAttendance(id: string): Promise<any> {
+  const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "delete", id }),
+  });
+  return await res.json();
 }
