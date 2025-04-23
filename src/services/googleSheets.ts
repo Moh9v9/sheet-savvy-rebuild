@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from "uuid";
 /**
  * Simulated Google Sheets service with user authentication and employee data.
@@ -20,7 +21,7 @@ export interface EmployeeRow {
   jobTitle: string;
   paymentType: string;
   rateOfPayment: string;
-  sponsorship: string;
+  sponsorship?: string; // Make sponsorship optional to match the form behavior
   status: string;
   created_at: string;
   updated_at: string;
