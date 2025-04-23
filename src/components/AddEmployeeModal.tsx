@@ -7,6 +7,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { toast } from "@/components/ui/sonner";
 import { addEmployee } from "@/services/googleSheets";
 import { v4 as uuidv4 } from "uuid";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 interface AddEmployeeModalProps {
   open: boolean;
@@ -27,7 +28,21 @@ type FormValues = {
 };
 
 export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddEmployeeModalProps) {
-  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormValues>();
+  const form = useForm<FormValues>({
+    defaultValues: {
+      fullName: "",
+      iqamaNo: "",
+      project: "",
+      location: "",
+      jobTitle: "",
+      paymentType: "Monthly",
+      rateOfPayment: "",
+      sponsorship: "YDM co",
+      status: "Active"
+    }
+  });
+
+  const { handleSubmit, control, formState: { isSubmitting }, reset } = form;
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -55,82 +70,183 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
         <DialogHeader>
           <DialogTitle>Add Employee</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-          <Input placeholder="Full Name" {...register("fullName", { required: true })} disabled={isSubmitting}/>
-          {errors.fullName && <div className="text-destructive text-xs">Full Name is required</div>}
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+            <FormField
+              control={control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter full name" {...field} disabled={isSubmitting}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Input placeholder="Iqama No" {...register("iqamaNo", { required: true })} disabled={isSubmitting}/>
-          {errors.iqamaNo && <div className="text-destructive text-xs">Iqama No is required</div>}
+            <FormField
+              control={control}
+              name="iqamaNo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Iqama Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Iqama number" {...field} disabled={isSubmitting}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Input placeholder="Project" {...register("project", { required: true })} disabled={isSubmitting}/>
-          {errors.project && <div className="text-destructive text-xs">Project is required</div>}
+            <FormField
+              control={control}
+              name="project"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter project name" {...field} disabled={isSubmitting}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Input placeholder="Location" {...register("location", { required: true })} disabled={isSubmitting}/>
-          {errors.location && <div className="text-destructive text-xs">Location is required</div>}
+            <FormField
+              control={control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter location" {...field} disabled={isSubmitting}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Input placeholder="Job Title" {...register("jobTitle", { required: true })} disabled={isSubmitting}/>
-          {errors.jobTitle && <div className="text-destructive text-xs">Job Title is required</div>}
+            <FormField
+              control={control}
+              name="jobTitle"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Job Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter job title" {...field} disabled={isSubmitting}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Select
-            onValueChange={value => (value ? (register("paymentType").onChange({ target: { value } }) as any) : null)}
-            defaultValue="Monthly"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Payment Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Monthly">Monthly</SelectItem>
-              <SelectItem value="Daily">Daily</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.paymentType && <div className="text-destructive text-xs">Payment Type is required</div>}
+            <FormField
+              control={control}
+              name="paymentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Type</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Monthly">Monthly</SelectItem>
+                      <SelectItem value="Daily">Daily</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Input
-            placeholder="Rate of Payment"
-            type="number"
-            {...register("rateOfPayment", { required: true, pattern: /^[0-9]+$/ })}
-            disabled={isSubmitting}
-          />
-          {errors.rateOfPayment && <div className="text-destructive text-xs">Rate of Payment is required & must be numeric</div>}
+            <FormField
+              control={control}
+              name="rateOfPayment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rate of Payment</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="Enter rate of payment" 
+                      {...field} 
+                      disabled={isSubmitting}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Select
-            onValueChange={value => (value ? (register("sponsorship").onChange({ target: { value } }) as any) : null)}
-            defaultValue="YDM co"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sponsorship" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="YDM co">YDM co</SelectItem>
-              <SelectItem value="YDM est">YDM est</SelectItem>
-              <SelectItem value="Outside">Outside</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.sponsorship && <div className="text-destructive text-xs">Sponsorship is required</div>}
+            <FormField
+              control={control}
+              name="sponsorship"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sponsorship</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select sponsorship" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="YDM co">YDM co</SelectItem>
+                      <SelectItem value="YDM est">YDM est</SelectItem>
+                      <SelectItem value="Outside">Outside</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Select
-            onValueChange={value => (value ? (register("status").onChange({ target: { value } }) as any) : null)}
-            defaultValue="Active"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Archived">Archived</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.status && <div className="text-destructive text-xs">Status is required</div>}
+            <FormField
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Archived">Archived</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Adding..." : "Add Employee"}
-            </Button>
-            <DialogClose asChild>
-              <Button variant="outline" type="button" disabled={isSubmitting}>Cancel</Button>
-            </DialogClose>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Adding..." : "Add Employee"}
+              </Button>
+              <DialogClose asChild>
+                <Button variant="outline" type="button" disabled={isSubmitting}>Cancel</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
