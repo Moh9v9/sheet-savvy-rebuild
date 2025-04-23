@@ -78,11 +78,11 @@ export async function updateEmployee(id: string, employeeData: EmployeeInput): P
   }
 }
 
-export async function deleteEmployee(rowIndex: number): Promise<any> {
+export async function deleteEmployee(id: string): Promise<any> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "delete", rowIndex }),
+    body: JSON.stringify({ operation: "delete", id }),
   });
   return res.json();
 }
