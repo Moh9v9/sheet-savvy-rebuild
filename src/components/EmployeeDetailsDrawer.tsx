@@ -4,29 +4,12 @@ import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Employee, EmployeeFormValues } from "@/types/employee";
 import { updateEmployee, deleteEmployee } from "@/services/googleSheets";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { X, Save, Trash2 } from "lucide-react";
+import { EmployeeFormFields } from "./employee/EmployeeFormFields";
+import { DeleteEmployeeDialog } from "./employee/DeleteEmployeeDialog";
 
 interface Props {
   employee: Employee | null;
@@ -41,12 +24,12 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
-  const { register, handleSubmit, reset, setValue } = useForm<EmployeeFormValues>();
+  const form = useForm<EmployeeFormValues>();
 
   // Reset form when employee changes
   React.useEffect(() => {
     if (employee) {
-      reset({
+      form.reset({
         fullName: employee.fullName,
         iqamaNo: employee.iqamaNo,
         project: employee.project,
@@ -58,7 +41,7 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
         status: employee.status,
       });
     }
-  }, [employee, reset]);
+  }, [employee, form.reset]);
 
   const onSubmit = async (data: EmployeeFormValues) => {
     if (!employee?.id) return;
@@ -113,90 +96,8 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
             </Button>
           </SheetHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-4">
-            <div className="space-y-4">
-              <div>
-                <Label>Full Name</Label>
-                <Input {...register("fullName")} disabled={!isEditing} />
-              </div>
-              
-              <div>
-                <Label>Iqama No</Label>
-                <Input {...register("iqamaNo")} disabled={!isEditing} />
-              </div>
-
-              <div>
-                <Label>Project</Label>
-                <Input {...register("project")} disabled={!isEditing} />
-              </div>
-
-              <div>
-                <Label>Location</Label>
-                <Input {...register("location")} disabled={!isEditing} />
-              </div>
-
-              <div>
-                <Label>Job Title</Label>
-                <Input {...register("jobTitle")} disabled={!isEditing} />
-              </div>
-
-              <div>
-                <Label>Payment Type</Label>
-                <Select
-                  disabled={!isEditing}
-                  value={employee.paymentType}
-                  onValueChange={(value) => setValue("paymentType", value as "Monthly" | "Daily")}
-                >
-                  <SelectTrigger>
-                    <SelectValue>{employee.paymentType}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Monthly">Monthly</SelectItem>
-                    <SelectItem value="Daily">Daily</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Rate of Payment</Label>
-                <Input {...register("rateOfPayment")} disabled={!isEditing} />
-              </div>
-
-              <div>
-                <Label>Sponsorship</Label>
-                <Select
-                  disabled={!isEditing}
-                  value={employee.sponsorship}
-                  onValueChange={(value) => setValue("sponsorship", value as "YDM co" | "YDM est" | "Outside")}
-                >
-                  <SelectTrigger>
-                    <SelectValue>{employee.sponsorship}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="YDM co">YDM co</SelectItem>
-                    <SelectItem value="YDM est">YDM est</SelectItem>
-                    <SelectItem value="Outside">Outside</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Status</Label>
-                <Select
-                  disabled={!isEditing}
-                  value={employee.status}
-                  onValueChange={(value) => setValue("status", value as "Active" | "Archived")}
-                >
-                  <SelectTrigger>
-                    <SelectValue>{employee.status}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
+            <EmployeeFormFields form={form} isEditing={isEditing} />
 
             <div className="text-sm text-muted-foreground space-y-1">
               <p>Created: {format(new Date(employee.created_at), "PPpp")}</p>
@@ -221,7 +122,7 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
                     variant="outline"
                     onClick={() => {
                       setIsEditing(false);
-                      reset();
+                      form.reset();
                     }}
                     disabled={isSaving}
                   >
@@ -246,26 +147,13 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
         </SheetContent>
       </Sheet>
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Employee</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {employee.fullName}? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteEmployeeDialog
+        employee={employee}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirmDelete={handleDelete}
+        isDeleting={isDeleting}
+      />
     </>
   );
 }
