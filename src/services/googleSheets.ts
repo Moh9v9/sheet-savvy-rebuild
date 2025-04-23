@@ -1,3 +1,4 @@
+
 // src/services/googleSheets.ts
 import { Employee, EmployeeInput } from "@/types/employee";
 
@@ -136,19 +137,31 @@ export async function readAttendance(): Promise<Attendance[]> {
 }
 
 export async function addAttendance(attendanceData: Omit<Attendance, "created_at" | "updated_at">): Promise<any> {
+  // Add current timestamp for created_at
+  const dataWithTimestamp = {
+    ...attendanceData,
+    created_at: new Date().toISOString()
+  };
+
   const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "add", ...attendanceData }),
+    body: JSON.stringify({ operation: "add", ...dataWithTimestamp }),
   });
   return await res.json();
 }
 
 export async function updateAttendance(id: string, attendanceData: Partial<Attendance>): Promise<any> {
+  // Add current timestamp for updated_at
+  const dataWithTimestamp = {
+    ...attendanceData,
+    updated_at: new Date().toISOString()
+  };
+
   const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "update", id, ...attendanceData }),
+    body: JSON.stringify({ operation: "update", id, ...dataWithTimestamp }),
   });
   return await res.json();
 }

@@ -1,137 +1,278 @@
 
-import React from "react";
+import React, { useState } from "react";
+import { format } from "date-fns";
+import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/types/employee";
-import { AttendanceRecord } from "@/services/AttendanceService";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { Clock, CircleDot } from "lucide-react";
+import { CircleDot, Pencil, Trash2 } from "lucide-react";
+import AttendanceDetailDrawer from "./AttendanceDetailDrawer";
+import EditAttendanceModal from "./EditAttendanceModal";
+import DeleteAttendanceDialog from "./DeleteAttendanceDialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
 
 interface AttendanceTableProps {
+  attendanceRecords: Attendance[];
   employees: Employee[];
-  getEmployeeAttendance: (employeeId: string) => AttendanceRecord | undefined;
-  onCheckIn: (employeeId: string) => void;
-  onCheckOut: (employeeId: string) => void;
-  onMarkAbsent: (employeeId: string) => void;
+  onEdit: (id: string, data: Partial<Attendance>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   isLoading?: boolean;
 }
 
-const AttendanceTable = ({
+const AttendanceTable: React.FC<AttendanceTableProps> = ({
+  attendanceRecords,
   employees,
-  getEmployeeAttendance,
-  onCheckIn,
-  onCheckOut,
-  onMarkAbsent,
+  onEdit,
+  onDelete,
   isLoading = false
-}: AttendanceTableProps) => {
-  // Current date
-  const today = format(new Date(), "EEEE, MMMM do yyyy");
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [selectedAttendance, setSelectedAttendance] = useState<Attendance | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Filter attendance records based on search query and filters
+  const filteredAttendance = attendanceRecords.filter((record) => {
+    // Filter by name search
+    const nameMatches = record.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by status
+    const statusMatches = statusFilter === "all" || record.status === statusFilter;
+    
+    // Filter by date
+    const dateMatches = !dateFilter || record.date === format(dateFilter, "yyyy-MM-dd");
+    
+    return nameMatches && statusMatches && dateMatches;
+  });
+
+  const handleRowClick = (attendance: Attendance) => {
+    setSelectedAttendance(attendance);
+    setDetailsOpen(true);
+  };
+
+  const handleEdit = (attendance: Attendance, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setSelectedAttendance(attendance);
+    setEditModalOpen(true);
+  };
+
+  const handleDelete = (attendance: Attendance, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setSelectedAttendance(attendance);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleEditSuccess = async () => {
+    // This will be handled by the parent component through onEdit
+    setEditModalOpen(false);
+  };
+
+  const handleDeleteSuccess = async () => {
+    // This will be handled by the parent component through onDelete
+    setDeleteDialogOpen(false);
+  };
+  
+  const getStatusBadgeColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'present':
+        return 'bg-green-100 text-green-800';
+      case 'absent':
+        return 'bg-red-100 text-red-800';
+      case 'late':
+        return 'bg-orange-100 text-orange-800';
+      case 'leave':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-semibold">Today's Attendance</h2>
-        <div className="text-muted-foreground text-sm">{today}</div>
-      </div>
-
-      <Table className="border rounded-md">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Project</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center py-8">
-                Loading attendance data...
-              </TableCell>
-            </TableRow>
-          ) : employees.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center py-8">
-                No employees found
-              </TableCell>
-            </TableRow>
-          ) : (
-            employees.map((employee) => {
-              const attendance = getEmployeeAttendance(employee.id);
-              const status = attendance?.status || "pending";
-              const hasCheckedIn = !!attendance?.checkIn;
-              const hasCheckedOut = !!attendance?.checkOut;
-
-              return (
-                <TableRow key={employee.id}>
-                  <TableCell className="font-medium">{employee.fullName}</TableCell>
-                  <TableCell>{employee.project}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={status} />
-                      {status}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right space-x-1">
-                    {!hasCheckedIn && status !== "absent" && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700"
-                        onClick={() => onCheckIn(employee.id)}
-                      >
-                        <Clock className="mr-1 h-4 w-4" />
-                        Check In
-                      </Button>
-                    )}
-                    {hasCheckedIn && !hasCheckedOut && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-orange-600 border-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                        onClick={() => onCheckOut(employee.id)}
-                      >
-                        <Clock className="mr-1 h-4 w-4" />
-                        Check Out
-                      </Button>
-                    )}
-                    {!hasCheckedIn && status !== "absent" && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700"
-                        onClick={() => onMarkAbsent(employee.id)}
-                      >
-                        Absent
-                      </Button>
-                    )}
-                    {(hasCheckedIn && hasCheckedOut) || status === "absent" ? (
-                      <span className="text-sm text-muted-foreground">Recorded</span>
-                    ) : null}
+    <>
+      <div className="flex flex-col gap-4">
+        {/* Search and filter controls */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-between">
+          <div className="flex flex-col sm:flex-row gap-2 flex-1">
+            <Input
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="sm:max-w-xs"
+            />
+            
+            <Select
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+            >
+              <SelectTrigger className="sm:max-w-[150px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="present">Present</SelectItem>
+                <SelectItem value="absent">Absent</SelectItem>
+                <SelectItem value="late">Late</SelectItem>
+                <SelectItem value="leave">Leave</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="justify-start sm:max-w-[180px]"
+                >
+                  {dateFilter ? (
+                    format(dateFilter, "PPP")
+                  ) : (
+                    <span>Filter by date</span>
+                  )}
+                  <CalendarIcon className="ml-2 h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <div className="p-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs" 
+                    onClick={() => setDateFilter(undefined)}
+                  >
+                    Clear
+                  </Button>
+                </div>
+                <Calendar
+                  mode="single"
+                  selected={dateFilter}
+                  onSelect={setDateFilter}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+        
+        {/* Attendance table */}
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Start Time</TableHead>
+                <TableHead>End Time</TableHead>
+                <TableHead>Overtime</TableHead>
+                <TableHead>Note</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    Loading attendance data...
                   </TableCell>
                 </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
-    </div>
+              ) : filteredAttendance.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    No attendance records found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredAttendance.map((record) => (
+                  <TableRow 
+                    key={record.id} 
+                    onClick={() => handleRowClick(record)}
+                    className="cursor-pointer"
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <CircleDot 
+                          className={`h-3 w-3 ${record.status === 'present' ? 'text-green-500' : 
+                                              record.status === 'absent' ? 'text-red-500' : 
+                                              record.status === 'late' ? 'text-orange-500' : 'text-blue-500'}`} 
+                        />
+                        {record.fullName}
+                      </div>
+                    </TableCell>
+                    <TableCell>{format(new Date(record.date), "MMM d, yyyy")}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(record.status)}`}>
+                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                      </span>
+                    </TableCell>
+                    <TableCell>{record.start_time || "N/A"}</TableCell>
+                    <TableCell>{record.end_time || "N/A"}</TableCell>
+                    <TableCell>{record.overtime || "N/A"}</TableCell>
+                    <TableCell className="truncate max-w-[150px]">{record.note || "N/A"}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleEdit(record, e)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-500 hover:text-red-600"
+                          onClick={(e) => handleDelete(record, e)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      
+      {/* Detail drawer */}
+      <AttendanceDetailDrawer
+        attendance={selectedAttendance}
+        open={detailsOpen}
+        onOpenChange={setDetailsOpen}
+      />
+      
+      {/* Edit modal */}
+      <EditAttendanceModal
+        attendance={selectedAttendance}
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        employees={employees}
+        onSuccess={handleEditSuccess}
+      />
+      
+      {/* Delete dialog */}
+      <DeleteAttendanceDialog
+        attendance={selectedAttendance}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onDelete={onDelete}
+        onSuccess={handleDeleteSuccess}
+      />
+    </>
   );
-};
-
-const StatusBadge = ({ status }: { status: string }) => {
-  switch (status) {
-    case "present":
-      return <CircleDot className="h-4 w-4 text-green-500" />;
-    case "late":
-      return <CircleDot className="h-4 w-4 text-orange-500" />;
-    case "absent":
-      return <CircleDot className="h-4 w-4 text-red-500" />;
-    case "pending":
-    default:
-      return <CircleDot className="h-4 w-4 text-gray-400" />;
-  }
 };
 
 export default AttendanceTable;
