@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { readEmployees } from "@/services/googleSheets";
@@ -91,6 +92,7 @@ export default function EmployeeTable() {
         onFilterChange={handleFilterChange}
         onClearFilters={handleClearFilters}
         data={data}
+        filteredEmployees={filteredEmployees}
       />
 
       {isLoading ? (

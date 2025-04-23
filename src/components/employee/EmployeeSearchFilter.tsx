@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Employee } from "@/types/employee";
+import { ExportEmployeesButton } from "./ExportEmployeesButton";
 
 interface FilterOptions {
   search: string;
@@ -27,6 +27,7 @@ interface EmployeeSearchFilterProps {
   onFilterChange: (key: keyof FilterOptions, value: string) => void;
   onClearFilters: () => void;
   data?: Employee[];
+  filteredEmployees: Employee[];
 }
 
 export function EmployeeSearchFilter({
@@ -34,6 +35,7 @@ export function EmployeeSearchFilter({
   onFilterChange,
   onClearFilters,
   data = [],
+  filteredEmployees,
 }: EmployeeSearchFilterProps) {
   // Extract unique values for dropdown filters
   const uniqueValues = useMemo(() => {
@@ -69,10 +71,12 @@ export function EmployeeSearchFilter({
   return (
     <div className="mb-6 space-y-4">
       <div className="flex flex-col md:flex-row items-center gap-4 justify-between">
-        <h2 className="text-2xl font-semibold text-gradient-primary">
-          Employees List
-        </h2>
-        {/* Name/Iqama Search - Matches first column */}
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-semibold text-gradient-primary">
+            Employees List
+          </h2>
+          <ExportEmployeesButton employees={filteredEmployees} />
+        </div>
         <div className="relative w-full md:w-64">
           <span className="absolute left-3 top-2.5 text-gray-400 pointer-events-none">
             <Search className="w-5 h-5" />
