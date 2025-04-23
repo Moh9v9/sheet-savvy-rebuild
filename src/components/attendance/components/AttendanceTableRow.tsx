@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AttendanceStatus } from "@/types/attendance";
 
 interface AttendanceTableRowProps {
   record: Attendance;
@@ -39,6 +40,12 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
     setIsEditing(false);
   };
 
+  // Helper function to ensure status is of the correct type
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedStatus = e.target.value as AttendanceStatus;
+    setEditedData({ ...editedData, status: selectedStatus });
+  };
+
   return (
     <TableRow onClick={() => !isEditing && onRowClick(record)}>
       <TableCell className="font-medium">
@@ -50,7 +57,7 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
           <select
             className="w-24 rounded-md border p-1"
             value={editedData.status}
-            onChange={(e) => setEditedData({ ...editedData, status: e.target.value })}
+            onChange={handleStatusChange}
           >
             <option value="present">Present</option>
             <option value="absent">Absent</option>
