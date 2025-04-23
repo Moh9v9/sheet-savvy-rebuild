@@ -58,10 +58,19 @@ export const useAttendanceData = () => {
           absent: 0,
           late: 0,
           leave: 0,
-          total: attendanceData.length
+          total: employeesData.length
         };
         
-        attendanceData.forEach(record => {
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Filter today's records
+        const todaysRecords = attendanceData.filter(record => 
+          record.date === today
+        );
+        
+        // Count status for today
+        todaysRecords.forEach(record => {
           if (record.status === 'present') calculatedStats.present++;
           else if (record.status === 'absent') calculatedStats.absent++;
           else if (record.status === 'late') calculatedStats.late++;
