@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { format, isValid, parseISO } from "date-fns";
 import { Attendance } from "@/services/googleSheets";
@@ -94,8 +95,11 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
     setDeleteDialogOpen(false);
   };
   
-  const getStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusBadgeColor = (status: string | null | undefined) => {
+    // Check if status is a string before using toLowerCase
+    const statusString = typeof status === 'string' ? status.toLowerCase() : 'unknown';
+    
+    switch (statusString) {
       case 'present':
         return 'bg-green-100 text-green-800';
       case 'absent':
@@ -223,7 +227,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                     <TableCell>{safeFormatDate(record.date)}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(record.status)}`}>
-                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                        {typeof record.status === 'string' ? record.status.charAt(0).toUpperCase() + record.status.slice(1) : 'Unknown'}
                       </span>
                     </TableCell>
                     <TableCell>{record.start_time || "N/A"}</TableCell>
