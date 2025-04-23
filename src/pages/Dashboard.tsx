@@ -1,126 +1,114 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAttendanceData } from "@/hooks/useAttendanceData";
-import { useAttendance } from "@/hooks/useAttendance";
-import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import CardInformation from "@/components/dashboard/CardInformation";
-import DailyAttendance from "@/components/dashboard/DailyAttendance";
-import { Separator } from "@/components/ui/separator";
+import { Plus } from "lucide-react";
+import AttendanceTable from "@/components/attendance/AttendanceTable";
+import AddAttendanceModal from "@/components/attendance/AddAttendanceModal";
+import ExportAttendanceButton from "@/components/attendance/ExportAttendanceButton";
 import { Attendance } from "@/services/googleSheets";
 
 const Dashboard = () => {
-  const { user, initializing } = useAuth();
-  const navigate = useNavigate();
-  const currentDate = format(new Date(), "MMMM dd, yyyy");
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
   
-  // Authentication check
-  useEffect(() => {
-    if (!initializing && !user) {
-      navigate('/login');
-    }
-  }, [user, initializing, navigate]);
+  const {
+    attendanceRecords,
+    employees,
+    stats,
+    loading,
+    addAttendanceRecord,
+    editAttendanceRecord,
+    deleteAttendanceRecord
+  } = useAttendanceData();
 
-  // Use our existing hooks to fetch data
-  const { attendanceRecords, employees, stats } = useAttendanceData();
-  const { attendanceRecords: todaysAttendanceRecords, stats: todayStats } = useAttendance();
+  const handleAddSuccess = () => {
+    setModalOpen(false);
+  };
 
-  // Transform AttendanceRecord[] to Attendance[] for compatibility with our components
-  const [todaysAttendance, setTodaysAttendance] = useState<Attendance[]>([]);
+  // Create wrapper functions that convert Promise<boolean> to Promise<void>
+  const handleEditAttendance = async (id: string, data: Partial<Attendance>) => {
+    await editAttendanceRecord(id, data);
+    // Return type is void
+  };
 
-  // Map todaysAttendanceRecords to the Attendance type format
-  useEffect(() => {
-    if (todaysAttendanceRecords.length > 0) {
-      const mappedRecords: Attendance[] = todaysAttendanceRecords.map(record => ({
-        id: record.employeeId, // Use employeeId as fallback for id
-        employee_id: record.employeeId,
-        fullName: employees.find(e => e.id === record.employeeId)?.fullName || 'Unknown',
-        date: record.date,
-        status: record.status,
-        start_time: record.checkIn || '',
-        end_time: record.checkOut || '',
-        overtime: '0',
-        note: '',
-        created_at: '',
-        updated_at: ''
-      }));
-      setTodaysAttendance(mappedRecords);
-    }
-  }, [todaysAttendanceRecords, employees]);
-
-  if (initializing) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <p className="text-lg font-medium">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to login
-  }
-
-  // Calculate attendance percentage for progress bar
-  const attendancePercentage = stats.total > 0 
-    ? Math.round((stats.present / stats.total) * 100) 
-    : 0;
+  const handleDeleteAttendance = async (id: string) => {
+    await deleteAttendanceRecord(id);
+    // Return type is void
+  };
 
   return (
     <div className="space-y-6">
-      {/* Page Header - styled like the original */}
-      <div className="flex flex-col space-y-2">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Welcome back, {user?.email?.split('@')[0] || 'User'}
-            </p>
-          </div>
-          <p className="text-sm md:text-base text-muted-foreground">
-            {currentDate}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome to the attendance management system
           </p>
         </div>
       </div>
-      
-      {/* Statistics Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <CardInformation 
-          title="Total Employees"
-          value={employees.length.toString()}
-          icon="users"
-          colorClass="border-l-blue-500"
-        />
-        <CardInformation 
-          title="Present Today"
-          value={stats.present.toString()}
-          icon="check-circle"
-          colorClass="border-l-green-500"
-        />
-        <CardInformation 
-          title="Absent Today"
-          value={stats.absent.toString()}
-          icon="x-circle"
-          colorClass="border-l-red-500"
-        />
-        <CardInformation 
-          title="Late Today"
-          value={stats.late.toString()}
-          icon="clock"
-          colorClass="border-l-orange-500"
+
+      {/* Attendance Stats */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card className="p-4 bg-blue-50 border-blue-200">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-muted-foreground">Total Records</span>
+            <span className="text-2xl font-bold">{stats.total}</span>
+          </div>
+        </Card>
+        <Card className="p-4 bg-green-50 border-green-200">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-muted-foreground">Present</span>
+            <span className="text-2xl font-bold text-green-600">{stats.present}</span>
+          </div>
+        </Card>
+        <Card className="p-4 bg-red-50 border-red-200">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-muted-foreground">Absent</span>
+            <span className="text-2xl font-bold text-red-600">{stats.absent}</span>
+          </div>
+        </Card>
+        <Card className="p-4 bg-orange-50 border-orange-200">
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-muted-foreground">Late</span>
+            <span className="text-2xl font-bold text-orange-600">{stats.late}</span>
+          </div>
+        </Card>
+      </div>
+
+      {/* Attendance Table Section */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Attendance Records</h2>
+          <div className="flex gap-2">
+            <ExportAttendanceButton
+              attendanceRecords={attendanceRecords}
+              filters={{ searchQuery, statusFilter, dateFilter }}
+            />
+            <Button onClick={() => setModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Attendance
+            </Button>
+          </div>
+        </div>
+
+        <AttendanceTable
+          attendanceRecords={attendanceRecords}
+          employees={employees}
+          onEdit={handleEditAttendance}
+          onDelete={handleDeleteAttendance}
+          isLoading={loading}
         />
       </div>
 
-      <Separator />
-      
-      {/* Daily Attendance Section */}
-      <DailyAttendance 
-        attendanceRecords={todaysAttendance}
+      <AddAttendanceModal
+        open={isModalOpen}
+        onOpenChange={setModalOpen}
         employees={employees}
-        stats={todayStats}
+        onSuccess={handleAddSuccess}
       />
     </div>
   );
