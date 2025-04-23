@@ -1,9 +1,9 @@
+
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AttendanceStatusBadge } from "./AttendanceStatusBadge";
 import { AttendanceActionButtons } from "./AttendanceActionButtons";
-import { AttendanceStatusDot } from "./AttendanceStatusDot";
 import { safeFormatDate } from "@/utils/dateUtils";
 
 interface AttendanceTableRowProps {
@@ -22,15 +22,12 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   return (
     <TableRow>
       <TableCell className="font-medium">
-        <div className="flex items-center gap-2">
-          <AttendanceStatusDot status={record.status} />
-          <button 
-            onClick={() => onRowClick(record)} 
-            className="hover:underline text-left focus:outline-none text-primary"
-          >
-            {record.fullName}
-          </button>
-        </div>
+        <button 
+          onClick={() => onRowClick(record)} 
+          className="hover:underline text-left focus:outline-none text-primary"
+        >
+          {record.fullName}
+        </button>
       </TableCell>
       <TableCell>{safeFormatDate(record.date)}</TableCell>
       <TableCell>
@@ -50,5 +47,3 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
     </TableRow>
   );
 };
-
-
