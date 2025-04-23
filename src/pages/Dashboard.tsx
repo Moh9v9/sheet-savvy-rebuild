@@ -36,7 +36,7 @@ const Dashboard = () => {
       const mappedRecords: Attendance[] = todaysAttendanceRecords.map(record => ({
         id: record.employeeId, // Use employeeId as fallback for id
         employee_id: record.employeeId,
-        fullName: employees.find(e => e.id === record.employeeId)?.name || 'Unknown',
+        fullName: employees.find(e => e.id === record.employeeId)?.fullName || 'Unknown',
         date: record.date,
         status: record.status,
         start_time: record.checkIn || '',
