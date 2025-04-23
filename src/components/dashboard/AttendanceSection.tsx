@@ -1,4 +1,5 @@
-import { ArrowLeft, ArrowRight, CalendarIcon, Plus } from "lucide-react";
+
+import { ArrowLeft, ArrowRight, CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
 import { Attendance, Employee } from "@/services/googleSheets";
@@ -17,7 +18,6 @@ interface AttendanceSectionProps {
   loading: boolean;
   onEdit: (date: string, employeeId: string, data: Partial<Attendance>) => Promise<void>;
   onDelete: (date: string, employeeId: string) => Promise<void>;
-  onAddClick: () => void;
   selectedDate: Date;
   onDateChange: (date: Date) => void;
 }
@@ -28,7 +28,6 @@ const AttendanceSection = ({
   loading,
   onEdit,
   onDelete,
-  onAddClick,
   selectedDate,
   onDateChange,
 }: AttendanceSectionProps) => {
@@ -50,19 +49,11 @@ const AttendanceSection = ({
 
   return (
     <div className="space-y-4 px-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">Daily Attendance</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage employee attendance records
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={onAddClick}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Attendance
-          </Button>
-        </div>
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">Daily Attendance</h2>
+        <p className="text-sm text-muted-foreground">
+          Manage employee attendance records
+        </p>
       </div>
 
       <div className="flex items-center gap-2 pb-4">
