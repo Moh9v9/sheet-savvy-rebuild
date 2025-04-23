@@ -9,12 +9,12 @@ interface HeaderProps {
 
 const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
   return (
-    <header className="bg-card shadow-md border-b border-border py-3 px-4 md:px-6 flex items-center justify-between">
+    <header className="bg-card/60 shadow-md border-b border-border/40 py-3 px-4 md:px-6 flex items-center justify-between backdrop-blur-xl">
       <div className="flex items-center">
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden mr-2"
+          className="md:hidden mr-2 text-foreground hover:bg-primary/10 hover:text-primary"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
           {sidebarOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}

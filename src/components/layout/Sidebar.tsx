@@ -42,18 +42,18 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
       )}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-20 h-full bg-white border-r transition-all duration-300 ease-in-out transform",
+          "fixed top-0 left-0 z-20 h-full bg-card/60 border-r border-border/40 transition-all duration-300 ease-in-out transform backdrop-blur-xl",
           isOpen ? "w-56 translate-x-0" : "w-20 -translate-x-0 md:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="h-16 flex items-center justify-between px-4 border-b">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-border/40">
             <div className={cn("flex items-center", !isOpen && "md:hidden")}>
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+              <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-lg">
                 S
               </div>
               <span className={cn(
-                "ml-2 font-semibold text-gray-800 transition-opacity duration-300",
+                "ml-2 font-semibold text-foreground transition-opacity duration-300",
                 isOpen ? "opacity-100" : "opacity-0 hidden"
               )}>
                 Sheet Savvy
@@ -62,7 +62,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex"
+              className="hidden md:flex text-foreground hover:text-primary hover:bg-primary/10"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
@@ -75,9 +75,9 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "w-full flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-all duration-200",
-                  "text-gray-700 hover:text-gray-900",
-                  window.location.pathname === item.path ? "bg-gray-100 font-medium" : ""
+                  "w-full flex items-center px-3 py-2 rounded-md transition-all duration-200",
+                  "text-muted-foreground hover:text-foreground hover:bg-primary/10",
+                  window.location.pathname === item.path ? "bg-primary/15 text-primary font-medium" : ""
                 )}
               >
                 <item.icon size={20} className="flex-shrink-0" />
