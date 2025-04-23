@@ -1,4 +1,4 @@
-
+import { v4 as uuidv4 } from "uuid";
 /**
  * Simulated Google Sheets service with user authentication and employee data.
  * In real life, this would use Google Sheets API to check credentials and fetch data.
@@ -81,4 +81,14 @@ export async function readEmployees(): Promise<EmployeeRow[]> {
   await new Promise((res) => setTimeout(res, 400));
   // In real app, call Sheets API
   return sampleEmployees;
+}
+
+export async function addEmployee(row: Omit<EmployeeRow, "updated_at"> & { updated_at?: string }): Promise<void> {
+  // In a real app: Google Sheets API call to append row.
+  await new Promise(res => setTimeout(res, 400));
+  // For the sample mock: push to array (for demo; not persisted).
+  (sampleEmployees as EmployeeRow[]).push({
+    ...row,
+    updated_at: row.updated_at ?? "",
+  });
 }
