@@ -1,9 +1,10 @@
-import { Plus, RefreshCcw, Save } from "lucide-react";
+
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
-import ExportAttendanceButton from "@/components/attendance/ExportAttendanceButton";
-import { Attendance } from "@/services/googleSheets";
-import { Employee } from "@/services/googleSheets";
+import { Attendance, Employee } from "@/services/googleSheets";
+import { format } from "date-fns";
+import { DatePicker } from "@/components/attendance/components/DatePicker";
 
 interface AttendanceSectionProps {
   attendanceRecords: Attendance[];
@@ -12,6 +13,8 @@ interface AttendanceSectionProps {
   onEdit: (id: string, data: Partial<Attendance>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onAddClick: () => void;
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
 }
 
 const AttendanceSection = ({
@@ -20,24 +23,21 @@ const AttendanceSection = ({
   loading,
   onEdit,
   onDelete,
-  onAddClick
+  onAddClick,
+  selectedDate,
+  onDateChange,
 }: AttendanceSectionProps) => {
   return (
     <div className="space-y-4 px-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-semibold text-foreground">Daily Attendance</h2>
-          <p className="text-sm text-muted-foreground">Manage employee attendance records</p>
+          <p className="text-sm text-muted-foreground">
+            Showing records for {format(selectedDate, "MMMM d, yyyy")}
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button variant="outline" size="sm">
-            <Save className="h-4 w-4 mr-2" />
-            Save Changes
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <DatePicker date={selectedDate} onDateChange={onDateChange} />
           <Button onClick={onAddClick}>
             <Plus className="h-4 w-4 mr-2" />
             Add Attendance

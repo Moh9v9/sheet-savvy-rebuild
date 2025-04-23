@@ -9,6 +9,7 @@ import AttendanceSection from "@/components/dashboard/AttendanceSection";
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const {
     attendanceRecords,
@@ -17,20 +18,24 @@ const Dashboard = () => {
     loading,
     addAttendanceRecord,
     editAttendanceRecord,
-    deleteAttendanceRecord
-  } = useAttendanceData();
+    deleteAttendanceRecord,
+    refreshData
+  } = useAttendanceData(selectedDate);
 
   const handleAddSuccess = () => {
     setModalOpen(false);
   };
 
-  // Create wrapper functions that convert Promise<boolean> to Promise<void>
   const handleEditAttendance = async (id: string, data: Partial<Attendance>) => {
     await editAttendanceRecord(id, data);
   };
 
   const handleDeleteAttendance = async (id: string) => {
     await deleteAttendanceRecord(id);
+  };
+
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date);
   };
 
   return (
@@ -44,6 +49,8 @@ const Dashboard = () => {
         onEdit={handleEditAttendance}
         onDelete={handleDeleteAttendance}
         onAddClick={() => setModalOpen(true)}
+        selectedDate={selectedDate}
+        onDateChange={handleDateChange}
       />
 
       <AddAttendanceModal

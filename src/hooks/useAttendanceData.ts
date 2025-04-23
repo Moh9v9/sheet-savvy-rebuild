@@ -1,6 +1,6 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 import { 
   Attendance, 
   readAttendance, 
@@ -19,7 +19,7 @@ export interface AttendanceStats {
   total: number;
 }
 
-export const useAttendanceData = () => {
+export const useAttendanceData = (selectedDate: Date = new Date()) => {
   const [attendanceRecords, setAttendanceRecords] = useState<Attendance[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [stats, setStats] = useState<AttendanceStats>({
@@ -32,27 +32,28 @@ export const useAttendanceData = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  // Force a refresh of data
   const refreshData = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);
   }, []);
 
-  // Load employees and attendance data
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         
-        // Load employees and attendance in parallel
         const [employeesData, attendanceData] = await Promise.all([
           readEmployees(),
           readAttendance()
         ]);
         
-        setEmployees(employeesData);
-        setAttendanceRecords(attendanceData);
+        const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+        const filteredAttendance = attendanceData.filter(
+          record => record.date === selectedDateStr
+        );
         
-        // Calculate attendance statistics
+        setEmployees(employeesData);
+        setAttendanceRecords(filteredAttendance);
+        
         const calculatedStats: AttendanceStats = {
           present: 0,
           absent: 0,
@@ -61,20 +62,11 @@ export const useAttendanceData = () => {
           total: employeesData.length
         };
         
-        // Get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Filter today's records
-        const todaysRecords = attendanceData.filter(record => 
-          record.date === today
-        );
-        
-        // Count status for today
-        todaysRecords.forEach(record => {
-          if (record.status === 'present') calculatedStats.present++;
-          else if (record.status === 'absent') calculatedStats.absent++;
-          else if (record.status === 'late') calculatedStats.late++;
-          else if (record.status === 'leave') calculatedStats.leave++;
+        filteredAttendance.forEach(record => {
+          if (record.status === 'present' || record.status === 'حاضر') calculatedStats.present++;
+          else if (record.status === 'absent' || record.status === 'غائب') calculatedStats.absent++;
+          else if (record.status === 'late' || record.status === 'متأخر') calculatedStats.late++;
+          else if (record.status === 'leave' || record.status === 'إجازة') calculatedStats.leave++;
         });
         
         setStats(calculatedStats);
@@ -87,7 +79,7 @@ export const useAttendanceData = () => {
     };
     
     loadData();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, selectedDate]);
 
   // Add a new attendance record
   const addAttendanceRecord = async (data: Omit<Attendance, "created_at" | "updated_at">) => {
