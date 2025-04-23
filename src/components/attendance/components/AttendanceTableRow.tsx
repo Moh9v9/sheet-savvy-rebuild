@@ -21,14 +21,16 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   onDelete,
 }) => {
   return (
-    <TableRow 
-      onClick={() => onRowClick(record)}
-      className="cursor-pointer"
-    >
+    <TableRow>
       <TableCell className="font-medium">
         <div className="flex items-center gap-2">
           <AttendanceStatusDot status={record.status} />
-          {record.fullName}
+          <button 
+            onClick={() => onRowClick(record)} 
+            className="hover:underline text-left focus:outline-none text-primary"
+          >
+            {record.fullName}
+          </button>
         </div>
       </TableCell>
       <TableCell>{safeFormatDate(record.date)}</TableCell>
@@ -49,3 +51,4 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
     </TableRow>
   );
 };
+
