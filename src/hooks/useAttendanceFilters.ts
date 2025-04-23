@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { format } from "date-fns";
 
 export const useAttendanceFilters = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -8,8 +9,11 @@ export const useAttendanceFilters = () => {
 
   const filterAttendance = (records: any[]) => {
     return records.filter((record) => {
-      // Filter by name search
-      const nameMatches = record.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+      // Filter by name or iqama search
+      const searchTerms = searchQuery.toLowerCase().trim();
+      const nameMatches = record.fullName?.toLowerCase().includes(searchTerms) || false;
+      const iqamaMatches = record.iqamaNumber?.toLowerCase().includes(searchTerms) || false;
+      const searchMatches = nameMatches || iqamaMatches || searchTerms === "";
       
       // Filter by status
       const statusMatches = statusFilter === "all" || record.status === statusFilter;
@@ -17,7 +21,7 @@ export const useAttendanceFilters = () => {
       // Filter by date
       const dateMatches = !dateFilter || record.date === format(dateFilter, "yyyy-MM-dd");
       
-      return nameMatches && statusMatches && dateMatches;
+      return searchMatches && statusMatches && dateMatches;
     });
   };
 
