@@ -14,9 +14,9 @@ const Employees = () => {
   };
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center bg-background py-10">
-      <div className="w-full max-w-7xl flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Employees</h1>
+    <div className="min-h-[70vh] flex flex-col bg-background py-6">
+      <div className="w-full max-w-7xl mx-auto flex justify-between items-center mb-4 px-4 md:px-0">
+        <h1 className="text-2xl font-semibold">Employees Management</h1>
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="mr-2" />
           Add Employee
