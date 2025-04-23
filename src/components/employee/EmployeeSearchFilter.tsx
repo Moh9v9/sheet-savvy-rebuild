@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
@@ -69,7 +70,7 @@ export function EmployeeSearchFilter({
     <div className="mb-6 space-y-4">
       <div className="flex flex-col md:flex-row items-center gap-4 justify-between">
         <h2 className="text-2xl font-semibold text-gradient-primary">
-          Employees
+          Employees List
         </h2>
         {/* Name/Iqama Search - Matches first column */}
         <div className="relative w-full md:w-64">
