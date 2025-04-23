@@ -1,12 +1,19 @@
 
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard as DashboardIcon,
   Users as EmployeesIcon,
   UserCheck as AttendanceIcon,
-  ChevronLeft,
-  ChevronRight
 } from "lucide-react";
+import {
+  Sidebar as ShadcnSidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -22,60 +29,52 @@ const navItems = [
 ];
 
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+  const location = useLocation();
+  
   return (
-    <>
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-10 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-      <aside
-        className={cn(
-          "fixed top-0 left-0 z-20 h-full bg-white border-r transition-all duration-300 transform",
-          isOpen ? "w-64 translate-x-0" : "w-20 -translate-x-0 md:translate-x-0"
-        )}
-      >
-        <div className="flex flex-col h-full">
-          <div className="h-16 flex items-center justify-between px-4 border-b">
-            <div className={cn("flex items-center", !isOpen && "md:hidden")}>
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
-                S
-              </div>
-              <span className={cn("ml-2 font-semibold text-gray-800", !isOpen && "hidden")}>Sheet Savvy</span>
+    <SidebarProvider defaultOpen={isOpen} open={isOpen} onOpenChange={setIsOpen}>
+      <ShadcnSidebar>
+        <SidebarHeader className="border-b">
+          <div className={cn("flex items-center px-4 py-5")}>
+            <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
+              S
             </div>
+            <span className={cn("ml-2 font-semibold", !isOpen && "hidden md:flex")}>
+              Sheet Savvy
+            </span>
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex"
+              className="hidden md:flex ml-auto"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
             </Button>
           </div>
+        </SidebarHeader>
 
-          {/* Nav links */}
-          <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
+        <SidebarContent>
+          <SidebarMenu>
             {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex items-center px-3 py-2 rounded-md hover:bg-gray-100 transition-colors",
-                  "text-gray-700 hover:text-gray-900",
-                  window.location.pathname === item.path ? "bg-gray-100 font-medium" : ""
-                )}
-              >
-                <item.icon size={20} className="flex-shrink-0" />
-                <span className={cn("ml-3 text-sm", !isOpen && "hidden")}>
-                  {item.name}
-                </span>
-              </Link>
+              <SidebarMenuItem key={item.path}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={location.pathname === item.path}
+                  tooltip={!isOpen ? item.name : undefined}
+                >
+                  <Link to={item.path} className="flex items-center w-full">
+                    <item.icon className="flex-shrink-0" />
+                    <span className={cn("ml-3", !isOpen && "hidden")}>
+                      {item.name}
+                    </span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             ))}
-          </nav>
-        </div>
-      </aside>
-    </>
+          </SidebarMenu>
+        </SidebarContent>
+      </ShadcnSidebar>
+    </SidebarProvider>
   );
 };
 
