@@ -52,7 +52,7 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
             <AttendanceTableRow
               key={record.id}
               record={record}
-              onClick={() => onRowClick(record)}
+              onRowClick={onRowClick}
               onEdit={onEdit}
               onDelete={onDelete}
             />
