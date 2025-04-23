@@ -13,13 +13,19 @@ export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ status
     
     switch (statusString) {
       case 'present':
+      case 'حاضر':
         return 'text-green-500';
       case 'absent':
+      case 'غائب':
         return 'text-red-500';
       case 'late':
+      case 'متأخر':
         return 'text-orange-500';
       case 'leave':
+      case 'إجازة':
         return 'text-blue-500';
+      case 'pending':
+        return 'text-yellow-500';
       default:
         return 'text-gray-400'; // Default to gray for unknown statuses
     }
