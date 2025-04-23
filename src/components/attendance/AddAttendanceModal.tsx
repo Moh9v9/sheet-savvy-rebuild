@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,6 +8,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { Employee } from "@/services/googleSheets";
 import { Attendance, addAttendance } from "@/services/googleSheets";
+import { AttendanceStatus } from "@/types/attendance";
 import {
   Dialog,
   DialogContent,
@@ -96,7 +98,7 @@ const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
         employee_id: data.employee_id,
         fullName: selectedEmployee.fullName,
         date: formattedDate,
-        status: data.status,
+        status: data.status as AttendanceStatus,
         start_time: data.start_time || "",
         end_time: data.end_time || "",
         overtime: data.overtime || "",
@@ -188,6 +190,7 @@ const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
                           date > new Date() || date < new Date("1900-01-01")
                         }
                         initialFocus
+                        className="pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>

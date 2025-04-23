@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { format, parse } from "date-fns";
 import { Employee } from "@/services/googleSheets";
 import { Attendance, updateAttendance } from "@/services/googleSheets";
+import { AttendanceStatus } from "@/types/attendance";
 import {
   Dialog,
   DialogContent,
@@ -131,7 +132,7 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
         employee_id: data.employee_id,
         fullName: selectedEmployee.fullName,
         date: formattedDate,
-        status: data.status,
+        status: data.status as AttendanceStatus,
         start_time: data.start_time || "",
         end_time: data.end_time || "",
         overtime: data.overtime || "",
@@ -225,6 +226,7 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
                           date > new Date() || date < new Date("1900-01-01")
                         }
                         initialFocus
+                        className="pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>

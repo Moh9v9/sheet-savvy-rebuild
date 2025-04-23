@@ -1,12 +1,14 @@
 
 import { Attendance as AttendanceType } from "@/types/attendance";
+import { Employee as EmployeeType, EmployeeInput } from "@/types/employee";
 
 const N8N_ATTENDANCE_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-attendance";
 const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-employees";
 const N8N_AUTH_WEBHOOK = "https://n8n.moh9v9.com/webhook/auth";
 
-// Exporting Attendance type for other files to use
+// Export the types for external use
 export type Attendance = AttendanceType;
+export type Employee = EmployeeType;
 
 // Type definitions for authentication
 export type GoogleSheetsUser = {
@@ -15,22 +17,7 @@ export type GoogleSheetsUser = {
   firstName: string;
   lastName: string;
   role: string;
-};
-
-// Type for employee data
-export type Employee = {
-  id: string;
-  fullName: string;
-  iqamaNo: string;
-  project: string;
-  location: string;
-  jobTitle: string;
-  paymentType: string;
-  rateOfPayment: number | string;
-  sponsorship: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
+  name: string; // Added name property
 };
 
 // ATTENDANCE METHODS
@@ -112,12 +99,20 @@ export async function readEmployees(): Promise<Employee[]> {
   });
   
   const data = await res.json();
-  if (Array.isArray(data)) return data;
+  if (Array.isArray(data)) {
+    // Ensure each employee has the correct paymentType
+    return data.map(emp => ({
+      ...emp,
+      paymentType: emp.paymentType === "Monthly" || emp.paymentType === "Daily" 
+        ? emp.paymentType 
+        : "Monthly" // Default to Monthly if invalid
+    }));
+  }
   return [];
 }
 
 // Add a new employee
-export async function addEmployee(data: any): Promise<Employee> {
+export async function addEmployee(data: EmployeeInput): Promise<Employee> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -128,7 +123,7 @@ export async function addEmployee(data: any): Promise<Employee> {
 }
 
 // Update an existing employee
-export async function updateEmployee(id: string, data: any): Promise<Employee> {
+export async function updateEmployee(id: string, data: EmployeeInput): Promise<Employee> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -159,6 +154,10 @@ export async function getUserByEmailAndPassword(email: string, password: string)
   
   const data = await res.json();
   if (data && data.id) {
+    // Add name property if not present
+    if (!data.name) {
+      data.name = `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email;
+    }
     return data;
   }
   return null;

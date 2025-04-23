@@ -33,11 +33,11 @@ const AttendanceSection = ({
         <div>
           <h2 className="text-xl font-semibold text-foreground">Daily Attendance</h2>
           <p className="text-sm text-muted-foreground">
-            Showing records for {format(selectedDate, "MMMM d, yyyy")}
+            Showing records for {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "today"}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <DatePicker date={selectedDate} onDateChange={onDateChange} />
+          <DatePicker date={selectedDate || new Date()} onDateChange={onDateChange} />
           <Button onClick={onAddClick}>
             <Plus className="h-4 w-4 mr-2" />
             Add Attendance
