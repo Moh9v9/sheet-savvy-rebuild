@@ -1,6 +1,7 @@
 
 import { MenuIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -22,6 +23,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
         <h1 className="text-xl font-semibold text-foreground">Sheet Savvy</h1>
       </div>
       <div className="flex items-center space-x-2">
+        <ThemeToggle />
         <Button variant="outline" size="sm">
           Help
         </Button>
