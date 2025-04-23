@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { AttendanceStatusBadge } from "./AttendanceStatusBadge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, Loader } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AttendanceStatus } from "@/types/attendance";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface AttendanceTableRowProps {
   record: Attendance;
@@ -22,7 +22,6 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   record,
   onRowClick,
   onEdit,
-  onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(record);
@@ -31,20 +30,22 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   const handleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsSaving(true);
-    await onEdit(editedData, e);
-    setIsSaving(false);
-    setIsEditing(false);
-  };
-
-  const handleCancel = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditedData(record);
-    setIsEditing(false);
+    try {
+      await onEdit(editedData, e);
+      toast.success("Attendance record updated successfully");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error("Failed to update attendance record");
+      console.error("Error updating attendance:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleAttendanceToggle = (checked: boolean) => {
     const newStatus: AttendanceStatus = checked ? 'present' : 'absent';
     setEditedData({ ...editedData, status: newStatus });
+    setIsEditing(true);
   };
 
   const isAttendancePresent = editedData.status === 'present' || editedData.status === 'حاضر';
@@ -60,7 +61,6 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
           <Switch
             checked={isAttendancePresent}
             onCheckedChange={handleAttendanceToggle}
-            disabled={!isEditing}
             className={cn(
               "transition-all duration-300",
               isAttendancePresent 
@@ -79,91 +79,66 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
         </div>
       </TableCell>
       <TableCell>
-        {isEditing ? (
-          <Input
-            type="time"
-            value={editedData.start_time || ""}
-            onChange={(e) => setEditedData({ ...editedData, start_time: e.target.value })}
-            className="w-24"
-          />
-        ) : (
-          record.start_time || "N/A"
-        )}
+        <Input
+          type="time"
+          value={editedData.start_time || ""}
+          onChange={(e) => {
+            setEditedData({ ...editedData, start_time: e.target.value });
+            setIsEditing(true);
+          }}
+          className="w-24"
+        />
       </TableCell>
       <TableCell>
-        {isEditing ? (
-          <Input
-            type="time"
-            value={editedData.end_time || ""}
-            onChange={(e) => setEditedData({ ...editedData, end_time: e.target.value })}
-            className="w-24"
-          />
-        ) : (
-          record.end_time || "N/A"
-        )}
+        <Input
+          type="time"
+          value={editedData.end_time || ""}
+          onChange={(e) => {
+            setEditedData({ ...editedData, end_time: e.target.value });
+            setIsEditing(true);
+          }}
+          className="w-24"
+        />
       </TableCell>
       <TableCell>
-        {isEditing ? (
-          <Input
-            type="number"
-            value={editedData.overtime || ""}
-            onChange={(e) => setEditedData({ ...editedData, overtime: e.target.value })}
-            className="w-20"
-          />
-        ) : (
-          record.overtime || "N/A"
-        )}
+        <Input
+          type="number"
+          value={editedData.overtime || ""}
+          onChange={(e) => {
+            setEditedData({ ...editedData, overtime: e.target.value });
+            setIsEditing(true);
+          }}
+          className="w-20"
+        />
       </TableCell>
       <TableCell className="relative">
-        {isEditing ? (
-          <div className="flex items-center gap-2">
-            <Input
-              value={editedData.note || ""}
-              onChange={(e) => setEditedData({ ...editedData, note: e.target.value })}
-              className="w-full"
-            />
-            <div className="flex gap-1 absolute right-2">
-              {isSaving ? (
-                <Skeleton className="h-8 w-16" />
-              ) : (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleSave}
-                    className="text-green-500 hover:text-green-600"
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCancel}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between gap-2">
-            <span>{record.note || "N/A"}</span>
+        <div className="flex items-center gap-2">
+          <Input
+            value={editedData.note || ""}
+            onChange={(e) => {
+              setEditedData({ ...editedData, note: e.target.value });
+              setIsEditing(true);
+            }}
+            className="w-full"
+          />
+          {isEditing && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditing(true);
-              }}
+              onClick={handleSave}
+              disabled={isSaving}
+              className="min-w-20"
             >
-              Edit
+              {isSaving ? (
+                <Loader className="h-4 w-4 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4 text-green-500" />
+              )}
+              {isSaving ? "Saving..." : "Save"}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </TableCell>
     </TableRow>
   );
 };
-
