@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -21,9 +20,9 @@ type FormValues = {
   project: string;
   location: string;
   jobTitle: string;
-  paymentType: "Monthly" | "Hourly" | "Daily";
+  paymentType: "Monthly" | "Daily";
   rateOfPayment: string;
-  sponsorship?: string;
+  sponsorship: "YDM co" | "YDM est" | "Outside";
   status: "Active" | "Archived";
 };
 
@@ -40,7 +39,6 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
       });
       
       console.log("Employee add response:", response);
-      // Consider any response as success since the API might return different formats
       toast.success("Employee added successfully!");
       reset();
       onOpenChange(false);
@@ -75,14 +73,13 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
 
           <Select
             onValueChange={value => (value ? (register("paymentType").onChange({ target: { value } }) as any) : null)}
-            value={undefined}
+            defaultValue="Monthly"
           >
             <SelectTrigger>
               <SelectValue placeholder="Payment Type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Monthly">Monthly</SelectItem>
-              <SelectItem value="Hourly">Hourly</SelectItem>
               <SelectItem value="Daily">Daily</SelectItem>
             </SelectContent>
           </Select>
@@ -96,7 +93,20 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
           />
           {errors.rateOfPayment && <div className="text-destructive text-xs">Rate of Payment is required & must be numeric</div>}
 
-          <Input placeholder="Sponsorship (optional)" {...register("sponsorship")} disabled={isSubmitting}/>
+          <Select
+            onValueChange={value => (value ? (register("sponsorship").onChange({ target: { value } }) as any) : null)}
+            defaultValue="YDM co"
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sponsorship" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="YDM co">YDM co</SelectItem>
+              <SelectItem value="YDM est">YDM est</SelectItem>
+              <SelectItem value="Outside">Outside</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.sponsorship && <div className="text-destructive text-xs">Sponsorship is required</div>}
 
           <Select
             onValueChange={value => (value ? (register("status").onChange({ target: { value } }) as any) : null)}
