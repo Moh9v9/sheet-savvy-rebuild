@@ -2,15 +2,12 @@
 import React from "react";
 
 interface AttendanceStatusBadgeProps {
-  status: string | null | undefined;
+  status: string;
 }
 
 export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ status }) => {
-  const getStatusBadgeColor = (status: string | null | undefined) => {
-    // Convert to lowercase only if status is a string, otherwise use a default
-    const safeStatus = typeof status === 'string' ? status.toLowerCase() : 'default';
-
-    switch (safeStatus) {
+  const getStatusBadgeColor = (status: string) => {
+    switch (status.toLowerCase()) {
       case 'present':
         return 'bg-green-100 text-green-800';
       case 'absent':
@@ -26,7 +23,7 @@ export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ st
 
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(status)}`}>
-      {typeof status === 'string' ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unknown'}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
 };
