@@ -1,5 +1,5 @@
 
-import { Attendance } from "@/types/employee";
+import { Attendance } from "@/types/attendance";
 
 const N8N_ATTENDANCE_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-attendance";
 
