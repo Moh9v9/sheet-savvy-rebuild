@@ -4,7 +4,6 @@ import {
   LayoutDashboard as DashboardIcon,
   Users as EmployeesIcon,
   UserCheck as AttendanceIcon,
-  LogIn as LoginIcon,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -74,14 +73,6 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
               </Link>
             ))}
           </nav>
-
-          {/* Sidebar footer (optional, could be login link later) */}
-          {/* <div className={cn("p-4 border-t", !isOpen && "md:hidden")}>
-            <Link to="/login" className="flex items-center text-gray-700 hover:text-blue-600">
-              <LoginIcon size={18} />
-              <span className={cn("ml-2 text-sm", !isOpen && "hidden")}>Login</span>
-            </Link>
-          </div> */}
         </div>
       </aside>
     </>
