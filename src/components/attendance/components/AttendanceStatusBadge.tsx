@@ -8,7 +8,7 @@ interface AttendanceStatusBadgeProps {
 export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ status }) => {
   const getStatusBadgeColor = (status: string | null | undefined) => {
     // Check if status is a string before calling toLowerCase
-    const statusString = typeof status === 'string' ? status.toLowerCase() : 'unknown';
+    const statusString = typeof status === 'string' ? status.toLowerCase().trim() : '';
     
     switch (statusString) {
       case 'present':
@@ -30,11 +30,10 @@ export const AttendanceStatusBadge: React.FC<AttendanceStatusBadgeProps> = ({ st
     }
   };
 
-  // Get a safe display value for the status
   const getDisplayStatus = (status: string | null | undefined): string => {
     if (typeof status !== 'string') return 'Unknown';
     
-    const statusLower = status.toLowerCase();
+    const statusLower = status.toLowerCase().trim();
     switch (statusLower) {
       case 'present':
       case 'حاضر':

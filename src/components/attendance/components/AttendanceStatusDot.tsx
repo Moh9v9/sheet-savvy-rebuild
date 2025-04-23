@@ -9,7 +9,7 @@ interface AttendanceStatusDotProps {
 export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ status }) => {
   const getStatusColor = (status: string | null | undefined) => {
     // Check if status is a string before using it
-    const statusString = typeof status === 'string' ? status.toLowerCase() : '';
+    const statusString = typeof status === 'string' ? status.toLowerCase().trim() : '';
     
     switch (statusString) {
       case 'present':
