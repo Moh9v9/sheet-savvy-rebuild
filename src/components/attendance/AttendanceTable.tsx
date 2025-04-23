@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/services/googleSheets";
 import { AttendanceFilters } from "./components/AttendanceFilters";
 import { AttendanceTableContent } from "./components/AttendanceTableContent";
 import AttendanceDetailDrawer from "./AttendanceDetailDrawer";

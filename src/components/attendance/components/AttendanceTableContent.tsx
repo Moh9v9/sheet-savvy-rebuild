@@ -1,8 +1,6 @@
-
 import React from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Attendance } from "@/services/googleSheets";
-import { Employee } from "@/types/employee";
 import { AttendanceTableRow } from "./AttendanceTableRow";
 
 interface AttendanceTableContentProps {

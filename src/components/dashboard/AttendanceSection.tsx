@@ -1,10 +1,9 @@
-
 import { Plus, RefreshCcw, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
 import ExportAttendanceButton from "@/components/attendance/ExportAttendanceButton";
 import { Attendance } from "@/services/googleSheets";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/services/googleSheets";
 
 interface AttendanceSectionProps {
   attendanceRecords: Attendance[];

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -51,4 +50,5 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
     </TableRow>
   );
 };
+
 

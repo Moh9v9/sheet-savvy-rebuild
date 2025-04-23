@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { format, parse } from "date-fns";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/services/googleSheets";
 import { Attendance, updateAttendance } from "@/services/googleSheets";
 import {
   Dialog,

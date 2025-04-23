@@ -1,8 +1,6 @@
-
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { readEmployees } from "@/services/googleSheets";
-import { Employee } from "@/types/employee";
+import { readEmployees, Employee } from "@/services/googleSheets";
 import { Table } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,7 +45,7 @@ export default function EmployeeTable() {
 
   // Filter & search logic
   const filteredEmployees = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
+    if (!data || !Array.isArray(data)) return [] as Employee[];
     
     let rows = data;
     

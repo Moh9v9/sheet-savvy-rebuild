@@ -1,9 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
-import { Employee } from '@/types/employee';
+import { Employee, readEmployees } from '@/services/googleSheets';
 import { AttendanceRecord, AttendanceStats, AttendanceService } from '@/services/AttendanceService';
 import { toast } from 'sonner';
-import { readEmployees } from '@/services/googleSheets';
 
 export const useAttendance = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);

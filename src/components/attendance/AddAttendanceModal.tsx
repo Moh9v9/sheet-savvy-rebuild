@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +5,7 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Employee } from "@/types/employee";
+import { Employee } from "@/services/googleSheets";
 import { Attendance, addAttendance } from "@/services/googleSheets";
 import {
   Dialog,

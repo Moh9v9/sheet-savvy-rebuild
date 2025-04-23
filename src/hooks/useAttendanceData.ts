@@ -6,10 +6,10 @@ import {
   readAttendance, 
   addAttendance, 
   updateAttendance, 
-  deleteAttendance 
+  deleteAttendance,
+  readEmployees,
+  Employee
 } from '@/services/googleSheets';
-import { Employee } from '@/types/employee';
-import { readEmployees } from '@/services/googleSheets';
 
 export interface AttendanceStats {
   present: number;

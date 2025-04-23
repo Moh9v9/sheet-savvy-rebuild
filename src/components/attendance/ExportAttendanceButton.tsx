@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Attendance } from "@/types/attendance";
+import { Attendance } from "@/services/googleSheets";
 import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import {
