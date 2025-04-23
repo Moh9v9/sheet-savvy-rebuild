@@ -10,6 +10,7 @@ import { Search, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import EditEmployeeModal from "./EditEmployeeModal";
+import { Employee } from "@/types/employee";
 
 const statusOptions = ["All", "Active", "Archived"];
 
