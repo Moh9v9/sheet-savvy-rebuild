@@ -19,6 +19,15 @@ export type Employee = {
   [key: string]: any;
 };
 
+export type GoogleSheetsUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
 async function callEmployeesApi(operation: string, payload?: any): Promise<any> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
@@ -81,4 +90,20 @@ export async function updateEmployee(employee: Employee): Promise<any> {
 // حذف موظف
 export async function deleteEmployee(id: string): Promise<any> {
   return await callEmployeesApi("delete", { id });
+}
+
+// Added function to get user by email and password
+export async function getUserByEmailAndPassword(email: string, password: string): Promise<GoogleSheetsUser | null> {
+  try {
+    const response = await callEmployeesApi("login", { email, password });
+    
+    if (response && response.success && response.user) {
+      return response.user;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Login error:", error);
+    return null;
+  }
 }
