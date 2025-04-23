@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -38,7 +37,7 @@ export default function EditEmployeeModal({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-            <EmployeeFormFields form={form} isSubmitting={isSubmitting} />
+            <EmployeeFormFields form={form} />
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Updating..." : "Update Employee"}
@@ -55,4 +54,3 @@ export default function EditEmployeeModal({
     </Dialog>
   );
 }
-

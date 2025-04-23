@@ -14,10 +14,10 @@ import { EmployeeFormValues } from "@/types/employee";
 
 interface EmployeeFormFieldsProps {
   form: UseFormReturn<EmployeeFormValues>;
-  isEditing: boolean;
+  isEditing?: boolean;
 }
 
-export function EmployeeFormFields({ form, isEditing }: EmployeeFormFieldsProps) {
+export function EmployeeFormFields({ form, isEditing = true }: EmployeeFormFieldsProps) {
   const { register, setValue } = form;
 
   return (

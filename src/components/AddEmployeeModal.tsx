@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
-            <EmployeeFormFields form={form} isSubmitting={isSubmitting} />
+            <EmployeeFormFields form={form} />
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Adding..." : "Add Employee"}
@@ -41,4 +40,3 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
     </Dialog>
   );
 }
-
