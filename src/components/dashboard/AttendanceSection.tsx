@@ -1,3 +1,4 @@
+
 import { ArrowLeft, ArrowRight, CalendarIcon } from "lucide-react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -113,6 +114,7 @@ const AttendanceSection = ({
         onEdit={onEdit}
         onDelete={onDelete}
         isLoading={loading}
+        defaultDateFilter={selectedDate}
       />
     </div>
   );

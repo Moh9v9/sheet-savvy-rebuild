@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/services/googleSheets";
@@ -15,6 +14,7 @@ interface AttendanceTableProps {
   onEdit: (date: string, employeeId: string, data: Partial<Attendance>) => Promise<void>;
   onDelete: (date: string, employeeId: string) => Promise<void>;
   isLoading?: boolean;
+  defaultDateFilter?: Date;
 }
 
 const AttendanceTable: React.FC<AttendanceTableProps> = ({
@@ -22,7 +22,8 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
   employees,
   onEdit,
   onDelete,
-  isLoading = false
+  isLoading = false,
+  defaultDateFilter
 }) => {
   const {
     searchQuery,
@@ -40,7 +41,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
     deleteDialogOpen,
     setDeleteDialogOpen,
     filteredAttendance
-  } = useAttendanceTable(attendanceRecords);
+  } = useAttendanceTable(attendanceRecords, defaultDateFilter);
 
   const handleRowClick = (attendance: Attendance) => {
     setSelectedAttendance(attendance);
