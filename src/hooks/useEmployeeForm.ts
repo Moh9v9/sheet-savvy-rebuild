@@ -4,6 +4,7 @@ import { Employee, EmployeeFormValues, EmployeeInput } from "@/types/employee";
 import { addEmployee, updateEmployee } from "@/services/googleSheets";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
+import { useEffect } from "react";
 
 type UseEmployeeFormProps = {
   employee?: Employee | null;
@@ -18,17 +19,35 @@ export const useEmployeeForm = ({
 }: UseEmployeeFormProps) => {
   const form = useForm<EmployeeFormValues>({
     defaultValues: {
-      fullName: employee?.fullName ?? "",
-      iqamaNo: employee?.iqamaNo ?? "",
-      project: employee?.project ?? "",
-      location: employee?.location ?? "",
-      jobTitle: employee?.jobTitle ?? "",
-      paymentType: employee?.paymentType ?? "Monthly",
-      rateOfPayment: employee?.rateOfPayment?.toString() ?? "",
-      sponsorship: employee?.sponsorship ?? "YDM co",
-      status: employee?.status ?? "Active"
+      fullName: "",
+      iqamaNo: "",
+      project: "",
+      location: "",
+      jobTitle: "",
+      paymentType: "Monthly",
+      rateOfPayment: "",
+      sponsorship: "YDM co",
+      status: "Active"
     }
   });
+
+  // Use useEffect to update form values when employee data changes
+  useEffect(() => {
+    if (employee) {
+      // Reset form with employee data
+      form.reset({
+        fullName: employee.fullName || "",
+        iqamaNo: employee.iqamaNo || "",
+        project: employee.project || "",
+        location: employee.location || "",
+        jobTitle: employee.jobTitle || "",
+        paymentType: employee.paymentType || "Monthly",
+        rateOfPayment: employee.rateOfPayment?.toString() || "",
+        sponsorship: employee.sponsorship || "YDM co",
+        status: employee.status || "Active"
+      });
+    }
+  }, [employee, form]);
 
   const onSubmit = async (values: EmployeeFormValues) => {
     try {
@@ -69,4 +88,3 @@ export const useEmployeeForm = ({
 
   return { form, onSubmit };
 };
-
