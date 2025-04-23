@@ -9,6 +9,7 @@ interface AttendanceTableContentProps {
   filteredAttendance: Attendance[];
   onRowClick: (attendance: Attendance) => void;
   onEdit: (attendance: Attendance, event: React.MouseEvent) => void;
+  onDelete: (attendance: Attendance, event: React.MouseEvent) => void;
 }
 
 export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
@@ -16,6 +17,7 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
   filteredAttendance,
   onRowClick,
   onEdit,
+  onDelete,
 }) => {
   return (
     <Table>
@@ -50,6 +52,7 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
               record={record}
               onRowClick={onRowClick}
               onEdit={onEdit}
+              onDelete={onDelete}
             />
           ))
         )}
