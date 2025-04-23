@@ -80,13 +80,6 @@ const AttendanceSection = ({
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goToNextDay}
-        >
-          <ArrowRight className="h-4 w-4" />
-        </Button>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -109,6 +102,13 @@ const AttendanceSection = ({
             />
           </PopoverContent>
         </Popover>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={goToNextDay}
+        >
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
 
       <AttendanceTable
