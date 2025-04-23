@@ -28,6 +28,17 @@ const Dashboard = () => {
     setModalOpen(false);
   };
 
+  // Create wrapper functions that convert Promise<boolean> to Promise<void>
+  const handleEditAttendance = async (id: string, data: Partial<Attendance>) => {
+    await editAttendanceRecord(id, data);
+    // Return type is void
+  };
+
+  const handleDeleteAttendance = async (id: string) => {
+    await deleteAttendanceRecord(id);
+    // Return type is void
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -86,8 +97,8 @@ const Dashboard = () => {
         <AttendanceTable
           attendanceRecords={attendanceRecords}
           employees={employees}
-          onEdit={editAttendanceRecord}
-          onDelete={deleteAttendanceRecord}
+          onEdit={handleEditAttendance}
+          onDelete={handleDeleteAttendance}
           isLoading={loading}
         />
       </div>
