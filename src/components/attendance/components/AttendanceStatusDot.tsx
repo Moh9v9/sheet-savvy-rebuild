@@ -4,7 +4,7 @@ import { CircleDot } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface AttendanceStatusDotProps {
-  status: string;
+  status: string | undefined | null;
   onChange?: (newStatus: string) => void;
   showToggle?: boolean;
   readOnly?: boolean;
@@ -16,7 +16,9 @@ export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({
   showToggle = false,
   readOnly = false
 }) => {
-  const isPresent = status.toLowerCase() === 'present';
+  // Handle undefined or null status values
+  const statusStr = typeof status === 'string' ? status : '';
+  const isPresent = statusStr.toLowerCase() === 'present';
   
   const handleToggle = () => {
     if (!readOnly && onChange) {
