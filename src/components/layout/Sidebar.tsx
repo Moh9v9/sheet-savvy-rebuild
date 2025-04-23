@@ -4,6 +4,8 @@ import {
   LayoutDashboard as DashboardIcon,
   Users as EmployeesIcon,
   UserCheck as AttendanceIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   Sidebar as ShadcnSidebar,
