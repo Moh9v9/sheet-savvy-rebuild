@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import CardInformation from "@/components/dashboard/CardInformation";
 import DailyAttendance from "@/components/dashboard/DailyAttendance";
 import { Separator } from "@/components/ui/separator";
+import { Attendance } from "@/services/googleSheets";
 
 const Dashboard = () => {
   const { user, initializing } = useAuth();
@@ -24,7 +25,30 @@ const Dashboard = () => {
 
   // Use our existing hooks to fetch data
   const { attendanceRecords, employees, stats } = useAttendanceData();
-  const { attendanceRecords: todaysAttendance, stats: todayStats } = useAttendance();
+  const { attendanceRecords: todaysAttendanceRecords, stats: todayStats } = useAttendance();
+
+  // Transform AttendanceRecord[] to Attendance[] for compatibility with our components
+  const [todaysAttendance, setTodaysAttendance] = useState<Attendance[]>([]);
+
+  // Map todaysAttendanceRecords to the Attendance type format
+  useEffect(() => {
+    if (todaysAttendanceRecords.length > 0) {
+      const mappedRecords: Attendance[] = todaysAttendanceRecords.map(record => ({
+        id: record.employeeId, // Use employeeId as fallback for id
+        employee_id: record.employeeId,
+        fullName: employees.find(e => e.id === record.employeeId)?.name || 'Unknown',
+        date: record.date,
+        status: record.status,
+        start_time: record.checkIn || '',
+        end_time: record.checkOut || '',
+        overtime: '0',
+        note: '',
+        created_at: '',
+        updated_at: ''
+      }));
+      setTodaysAttendance(mappedRecords);
+    }
+  }, [todaysAttendanceRecords, employees]);
 
   if (initializing) {
     return (
