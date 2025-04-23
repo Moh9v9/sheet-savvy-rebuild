@@ -5,7 +5,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Employee } from "@/types/employee";
 import { useEmployeeForm } from "@/hooks/useEmployeeForm";
-import { X } from "lucide-react";
 import { EmployeeFormFields } from "./employee/EmployeeFormFields";
 import { EmployeeActions } from "./employee/EmployeeActions";
 import { DeleteEmployeeDialog } from "./employee/DeleteEmployeeDialog";
@@ -63,9 +62,7 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader className="flex flex-row items-center justify-between pb-4">
             <SheetTitle>{employee.fullName}</SheetTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
+            {/* Removed the redundant X button here */}
           </SheetHeader>
 
           <form onSubmit={(e) => handleSubmit(e)} className="space-y-6 mt-4">
