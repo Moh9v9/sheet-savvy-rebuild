@@ -27,8 +27,8 @@ const AttendanceSection = ({
     <div className="space-y-4 px-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-white">Daily Attendance</h2>
-          <p className="text-sm text-slate-400">Manage employee attendance records</p>
+          <h2 className="text-xl font-semibold text-foreground">Daily Attendance</h2>
+          <p className="text-sm text-muted-foreground">Manage employee attendance records</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">

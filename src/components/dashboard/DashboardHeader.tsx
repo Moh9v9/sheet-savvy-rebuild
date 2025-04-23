@@ -8,16 +8,16 @@ const DashboardHeader = () => {
   const formattedDate = format(today, "EEEE, MMMM d, yyyy");
   
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 bg-slate-800/50 border-b border-slate-700">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-6 bg-card/50 border-b border-border">
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           Dashboard
         </h1>
-        <p className="text-slate-400 text-lg">
+        <p className="text-muted-foreground text-lg">
           Welcome back, {user?.name || "Guest"}
         </p>
       </div>
-      <div className="text-sm md:text-base text-slate-300 font-medium">
+      <div className="text-sm md:text-base text-foreground/80 font-medium">
         {formattedDate}
       </div>
     </div>

@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
   return (
-    <header className="bg-white shadow-sm border-b py-3 px-4 md:px-6 flex items-center justify-between">
+    <header className="bg-card shadow-md border-b border-border py-3 px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center">
         <Button
           variant="ghost"
@@ -19,7 +19,7 @@ const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
         >
           {sidebarOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
         </Button>
-        <h1 className="text-xl font-semibold text-gray-800">Sheet Savvy</h1>
+        <h1 className="text-xl font-semibold text-foreground">Sheet Savvy</h1>
       </div>
       <div className="flex items-center space-x-2">
         <Button variant="outline" size="sm">
