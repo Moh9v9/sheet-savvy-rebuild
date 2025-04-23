@@ -25,7 +25,7 @@ export function EmployeeTableBody({ employees, onViewDetails }: EmployeeTableBod
             <TableCell>
               <Button
                 variant="link"
-                className="p-0 h-auto font-normal"
+                className="p-0 h-auto font-normal hover:underline"
                 onClick={() => onViewDetails(emp)}
               >
                 {emp.fullName}
