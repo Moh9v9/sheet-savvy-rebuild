@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -8,6 +9,7 @@ import { Check, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AttendanceStatus } from "@/types/attendance";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 interface AttendanceTableRowProps {
   record: Attendance;
@@ -59,8 +61,21 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
             checked={isAttendancePresent}
             onCheckedChange={handleAttendanceToggle}
             disabled={!isEditing}
+            className={cn(
+              "transition-all duration-300",
+              isAttendancePresent 
+                ? "data-[state=checked]:bg-green-500" 
+                : "data-[state=unchecked]:bg-red-500"
+            )}
           />
-          <AttendanceStatusBadge status={editedData.status} />
+          <div className={cn(
+            "font-medium text-sm px-2 py-1 rounded-full",
+            isAttendancePresent 
+              ? "bg-green-100 text-green-800" 
+              : "bg-red-100 text-red-800"
+          )}>
+            {isAttendancePresent ? "Present" : "Absent"}
+          </div>
         </div>
       </TableCell>
       <TableCell>
@@ -151,3 +166,4 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
     </TableRow>
   );
 };
+
