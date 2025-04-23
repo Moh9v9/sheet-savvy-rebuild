@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/types/employee";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,6 +43,16 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Helper function to safely format dates
+  const safeFormatDate = (dateString: string) => {
+    try {
+      const date = parseISO(dateString);
+      return isValid(date) ? format(date, "MMM d, yyyy") : "Invalid date";
+    } catch (error) {
+      return "Invalid date";
+    }
+  };
   
   // Filter attendance records based on search query and filters
   const filteredAttendance = attendanceRecords.filter((record) => {
@@ -159,6 +169,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                   selected={dateFilter}
                   onSelect={setDateFilter}
                   initialFocus
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -210,7 +221,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                         {record.fullName}
                       </div>
                     </TableCell>
-                    <TableCell>{format(new Date(record.date), "MMM d, yyyy")}</TableCell>
+                    <TableCell>{safeFormatDate(record.date)}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(record.status)}`}>
                         {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
@@ -276,3 +287,4 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
 };
 
 export default AttendanceTable;
+
