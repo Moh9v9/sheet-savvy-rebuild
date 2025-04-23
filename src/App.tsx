@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,7 +17,7 @@ import { AuthProvider } from "@/context/AuthContext";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider defaultTheme="dark" attribute="class">
+  <ThemeProvider defaultTheme="dark" attribute="class" enableSystem={false}>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
