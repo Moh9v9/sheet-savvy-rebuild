@@ -50,12 +50,24 @@ export async function readEmployees(): Promise<Employee[]> {
 }
 
 export async function addEmployee(employeeData: Employee): Promise<any> {
-  const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "add", ...employeeData }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ operation: "add", ...employeeData }),
+    });
+    
+    // The n8n webhook might return various response formats
+    // We just need to know if the request was successful
+    if (res.ok) {
+      return { success: true };
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error("Error adding employee:", error);
+    throw error;
+  }
 }
 
 export async function updateEmployee(rowIndex: number, employeeData: Partial<Employee>): Promise<any> {

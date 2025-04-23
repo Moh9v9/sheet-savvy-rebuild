@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ type FormValues = {
   project: string;
   location: string;
   jobTitle: string;
-  paymentType: "Monthly" | "Hourly";
+  paymentType: "Monthly" | "Hourly" | "Daily";
   rateOfPayment: string;
   sponsorship?: string;
   status: "Active" | "Archived";
@@ -31,17 +32,21 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await addEmployee({
+      const response = await addEmployee({
         id: uuidv4(),
         ...values,
         created_at: new Date().toISOString().slice(0, 10),
         updated_at: "",
       });
-      toast.success("Employee added!");
+      
+      console.log("Employee add response:", response);
+      // Consider any response as success since the API might return different formats
+      toast.success("Employee added successfully!");
       reset();
       onOpenChange(false);
       onSuccess();
     } catch (err) {
+      console.error("Failed to add employee:", err);
       toast.error("Failed to add employee");
     }
   };
@@ -78,6 +83,7 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
             <SelectContent>
               <SelectItem value="Monthly">Monthly</SelectItem>
               <SelectItem value="Hourly">Hourly</SelectItem>
+              <SelectItem value="Daily">Daily</SelectItem>
             </SelectContent>
           </Select>
           {errors.paymentType && <div className="text-destructive text-xs">Payment Type is required</div>}
@@ -94,7 +100,7 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
 
           <Select
             onValueChange={value => (value ? (register("status").onChange({ target: { value } }) as any) : null)}
-            value={undefined}
+            defaultValue="Active"
           >
             <SelectTrigger>
               <SelectValue placeholder="Status" />
@@ -107,7 +113,9 @@ export default function AddEmployeeModal({ open, onOpenChange, onSuccess }: AddE
           {errors.status && <div className="text-destructive text-xs">Status is required</div>}
 
           <DialogFooter>
-            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Adding..." : "Add Employee"}</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Adding..." : "Add Employee"}
+            </Button>
             <DialogClose asChild>
               <Button variant="outline" type="button" disabled={isSubmitting}>Cancel</Button>
             </DialogClose>
