@@ -1,13 +1,13 @@
 
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { readEmployees, EmployeeRow } from "@/services/googleSheets";
+import { readEmployees, Employee } from "@/services/googleSheets";
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const statusOptions = ["All", "Active", "Archived"];
@@ -24,7 +24,8 @@ export default function EmployeeTable() {
 
   // Filter & search logic
   const filteredEmployees = useMemo(() => {
-    if (!data) return [];
+    if (!data || !Array.isArray(data)) return [];
+    
     let rows = data;
     if (status !== "All") {
       rows = rows.filter((e) => e.status === status);
@@ -33,8 +34,8 @@ export default function EmployeeTable() {
       const term = search.toLowerCase();
       rows = rows.filter(
         (e) =>
-          e.fullName.toLowerCase().includes(term) ||
-          e.iqamaNo.toLowerCase().includes(term)
+          e.fullName?.toLowerCase().includes(term) ||
+          e.iqamaNo?.toLowerCase().includes(term)
       );
     }
     return rows;
@@ -98,14 +99,14 @@ export default function EmployeeTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredEmployees.length === 0 ? (
+              {!filteredEmployees || filteredEmployees.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={9} className="text-center text-muted-foreground">
                     No employees found.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredEmployees.map((emp) => (
+                filteredEmployees.map((emp: Employee) => (
                   <TableRow key={emp.id}>
                     <TableCell>{emp.fullName}</TableCell>
                     <TableCell>{emp.iqamaNo}</TableCell>
@@ -114,7 +115,7 @@ export default function EmployeeTable() {
                     <TableCell>{emp.jobTitle}</TableCell>
                     <TableCell>{emp.paymentType}</TableCell>
                     <TableCell>{emp.rateOfPayment}</TableCell>
-                    <TableCell>{emp.sponsorship}</TableCell>
+                    <TableCell>{emp.sponsorship || "-"}</TableCell>
                     <TableCell>
                       <span
                         className={cn(

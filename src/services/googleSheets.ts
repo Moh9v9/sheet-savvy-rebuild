@@ -1,8 +1,9 @@
+
 // src/services/googleSheets.ts
 
 const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/employees";
 
-type Employee = {
+export type Employee = {
   id: string;
   fullName: string;
   iqamaNo: string;
@@ -11,7 +12,7 @@ type Employee = {
   jobTitle: string;
   paymentType: string;
   rateOfPayment: string;
-  sponsorship: string;
+  sponsorship?: string;
   status: string;
   created_at?: string;
   updated_at?: string;
@@ -35,17 +36,36 @@ async function callEmployeesApi(operation: string, payload?: any): Promise<any> 
 
 // قراءة كل الموظفين
 export async function readEmployees(): Promise<Employee[]> {
-  const rows = await callEmployeesApi("read");
-  // إذا البيانات راجعة على شكل جدول (مصفوفة مصفوفات)، حولها لكائنات:
-  if (Array.isArray(rows) && Array.isArray(rows[0])) {
-    // أول صف عناوين
-    const headers = rows[0];
-    return rows.slice(1).map((row: any[]) =>
-      Object.fromEntries(headers.map((key, i) => [key, row[i] || ""]))
-    );
+  try {
+    const data = await callEmployeesApi("read");
+    
+    // Handle different response formats
+    if (Array.isArray(data)) {
+      if (data.length === 0) {
+        return [];
+      }
+      
+      // If data is already an array of objects
+      if (typeof data[0] === 'object' && !Array.isArray(data[0])) {
+        return data;
+      }
+      
+      // If data is an array of arrays (first row is headers)
+      if (Array.isArray(data[0])) {
+        const headers = data[0];
+        return data.slice(1).map((row: any[]) =>
+          Object.fromEntries(headers.map((key, i) => [key, row[i] || ""]))
+        );
+      }
+    }
+    
+    // Return empty array as fallback
+    console.error("Unexpected data format from API:", data);
+    return [];
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return [];
   }
-  // إذا راجعة ككائنات مباشرة
-  return rows;
 }
 
 // إضافة موظف جديد
