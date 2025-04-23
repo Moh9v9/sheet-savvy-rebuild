@@ -1,16 +1,10 @@
 // src/services/googleSheets.ts
 
+// روابط الـ n8n Webhook
+const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-employees";
 const N8N_USERS_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-users";
-const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/employees";
 
-export type GoogleSheetsUser = {
-  id: string;
-  email: string;
-  password: string;
-  role?: string;
-  [key: string]: any;
-};
-
+// ====== [ أنواع البيانات ] ======
 export type Employee = {
   id: string;
   fullName: string;
@@ -22,88 +16,30 @@ export type Employee = {
   rateOfPayment: string;
   sponsorship?: string;
   status: string;
+  created_at?: string;
+  updated_at?: string;
   [key: string]: any;
 };
 
-// قراءة كل المستخدمين
-export async function readUsers(): Promise<GoogleSheetsUser[]> {
-  const res = await fetch(N8N_USERS_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "read" }),
-  });
-  const data = await res.json();
-  // أعد البيانات كمصفوفة أو مصفوفة فاضية في حال لا يوجد مستخدمين
-  return Array.isArray(data) ? data : [];
-}
+export type GoogleSheetsUser = {
+  id: string;
+  email: string;
+  password: string;
+  role?: string;
+  [key: string]: any;
+};
 
-// إضافة مستخدم جديد
-export async function addUser(userData: GoogleSheetsUser): Promise<any> {
-  const res = await fetch(N8N_USERS_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "add", ...userData }),
-  });
-  return res.json();
-}
-
-// تحديث مستخدم (يلزم rowIndex)
-export async function updateUser(rowIndex: number, userData: Partial<GoogleSheetsUser>): Promise<any> {
-  const res = await fetch(N8N_USERS_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "update", rowIndex, ...userData }),
-  });
-  return res.json();
-}
-
-// حذف مستخدم (يلزم rowIndex)
-export async function deleteUser(rowIndex: number): Promise<any> {
-  const res = await fetch(N8N_USERS_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "delete", rowIndex }),
-  });
-  return res.json();
-}
-
-// التحقق من تسجيل الدخول (Login)
-export async function getUserByEmailAndPassword(email: string, password: string): Promise<GoogleSheetsUser | null> {
-  const res = await fetch(N8N_USERS_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "login", email, password }),
-  });
-  const data = await res.json();
-  // إذا لم يوجد يرجع null، إذا وجد يرجع بيانات المستخدم
-  if (Array.isArray(data) && data.length > 0) {
-    return data[0];
-  }
-  return null;
-}
-
-// قراءة كل الموظفين
+// ====== [ دوال الموظفين ] ======
 export async function readEmployees(): Promise<Employee[]> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ operation: "read" }),
   });
-  
   const data = await res.json();
-  
-  // Make sure we always return an array
-  if (Array.isArray(data)) {
-    return data;
-  } else if (data && typeof data === 'object') {
-    // Some APIs might wrap the response in another object
-    return Array.isArray(data.data) ? data.data : [];
-  }
-  
-  return [];
+  return Array.isArray(data) ? data : [];
 }
 
-// إضافة موظف جديد
 export async function addEmployee(employeeData: Employee): Promise<any> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
@@ -113,7 +49,6 @@ export async function addEmployee(employeeData: Employee): Promise<any> {
   return res.json();
 }
 
-// تحديث موظف
 export async function updateEmployee(rowIndex: number, employeeData: Partial<Employee>): Promise<any> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
@@ -123,7 +58,6 @@ export async function updateEmployee(rowIndex: number, employeeData: Partial<Emp
   return res.json();
 }
 
-// حذف موظف
 export async function deleteEmployee(rowIndex: number): Promise<any> {
   const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
     method: "POST",
@@ -131,4 +65,55 @@ export async function deleteEmployee(rowIndex: number): Promise<any> {
     body: JSON.stringify({ operation: "delete", rowIndex }),
   });
   return res.json();
+}
+
+// ====== [ دوال المستخدمين ] ======
+export async function readUsers(): Promise<GoogleSheetsUser[]> {
+  const res = await fetch(N8N_USERS_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "read" }),
+  });
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
+export async function addUser(userData: GoogleSheetsUser): Promise<any> {
+  const res = await fetch(N8N_USERS_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "add", ...userData }),
+  });
+  return res.json();
+}
+
+export async function updateUser(rowIndex: number, userData: Partial<GoogleSheetsUser>): Promise<any> {
+  const res = await fetch(N8N_USERS_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "update", rowIndex, ...userData }),
+  });
+  return res.json();
+}
+
+export async function deleteUser(rowIndex: number): Promise<any> {
+  const res = await fetch(N8N_USERS_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "delete", rowIndex }),
+  });
+  return res.json();
+}
+
+export async function getUserByEmailAndPassword(email: string, password: string): Promise<GoogleSheetsUser | null> {
+  const res = await fetch(N8N_USERS_WEBHOOK, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ operation: "login", email, password }),
+  });
+  const data = await res.json();
+  if (Array.isArray(data) && data.length > 0) {
+    return data[0];
+  }
+  return null;
 }
