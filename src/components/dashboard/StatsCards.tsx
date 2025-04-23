@@ -9,7 +9,7 @@ interface StatsCardsProps {
 
 const StatsCards = ({ stats }: StatsCardsProps) => {
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 px-6 md:grid-cols-3">
       <StatsCard 
         label="Total Employees"
         value={stats.total}
@@ -45,12 +45,12 @@ interface StatsCardProps {
 
 const StatsCard = ({ label, value, Icon, className, iconClassName }: StatsCardProps) => {
   return (
-    <Card className={`p-4 flex items-start gap-4 bg-gradient-to-br from-slate-900/50 to-slate-800/50 backdrop-blur-sm border-2 ${className}`}>
+    <Card className={`p-4 flex items-start gap-4 bg-slate-800/50 border-2 ${className}`}>
       <div className={`p-2 rounded-md bg-slate-900/50 ${iconClassName}`}>
         <Icon className="w-5 h-5" />
       </div>
       <div className="space-y-0.5">
-        <p className="text-2xl font-bold tracking-tight text-gradient">{value}</p>
+        <p className="text-2xl font-bold tracking-tight text-white">{value}</p>
         <p className="text-sm text-slate-400">{label}</p>
       </div>
     </Card>
