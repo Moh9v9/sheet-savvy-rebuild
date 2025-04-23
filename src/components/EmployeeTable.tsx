@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { readEmployees, deleteEmployee } from "@/services/googleSheets";
+import { readEmployees } from "@/services/googleSheets";
 import { Employee } from "@/types/employee";
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
@@ -22,6 +22,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { EmployeeDetailsDrawer } from "./EmployeeDetailsDrawer";
 
 const statusOptions = ["All", "Active", "Archived"];
 
@@ -70,29 +71,6 @@ export default function EmployeeTable() {
 
   const handleEditSuccess = () => {
     refetch();
-  };
-
-  const handleDeleteClick = (employee: Employee) => {
-    setEmployeeToDelete(employee);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!employeeToDelete) return;
-
-    setIsDeleting(true);
-    try {
-      await deleteEmployee(employeeToDelete.id);
-      toast.success("Employee deleted successfully");
-      refetch(); // Refresh the table
-    } catch (error) {
-      console.error("Error deleting employee:", error);
-      toast.error("Failed to delete employee");
-    } finally {
-      setIsDeleting(false);
-      setDeleteDialogOpen(false);
-      setEmployeeToDelete(null);
-    }
   };
 
   return (
@@ -163,7 +141,15 @@ export default function EmployeeTable() {
               ) : (
                 filteredEmployees.map((emp: Employee) => (
                   <TableRow key={emp.id}>
-                    <TableCell>{emp.fullName}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto font-normal"
+                        onClick={() => setSelectedEmployee(emp)}
+                      >
+                        {emp.fullName}
+                      </Button>
+                    </TableCell>
                     <TableCell>{emp.iqamaNo}</TableCell>
                     <TableCell>{emp.project}</TableCell>
                     <TableCell>{emp.location}</TableCell>
@@ -184,24 +170,13 @@ export default function EmployeeTable() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(emp)}
-                          className="size-8"
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteClick(emp)}
-                          className="size-8 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedEmployee(emp)}
+                      >
+                        View Details
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -211,33 +186,15 @@ export default function EmployeeTable() {
         </div>
       )}
 
-      <EditEmployeeModal
-        open={isEditModalOpen}
-        onOpenChange={setEditModalOpen}
-        onSuccess={handleEditSuccess}
+      <EmployeeDetailsDrawer
         employee={selectedEmployee}
+        open={!!selectedEmployee}
+        onClose={() => setSelectedEmployee(null)}
+        onEmployeeDeleted={() => {
+          refetch();
+          setSelectedEmployee(null);
+        }}
       />
-
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Employee</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {employeeToDelete?.fullName}? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              disabled={isDeleting}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
