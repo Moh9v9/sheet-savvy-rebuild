@@ -1,4 +1,3 @@
-
 import React, { useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
@@ -137,7 +136,6 @@ export function EmployeeSearchFilter({
             <SelectItem value="All">All Payment Types</SelectItem>
             <SelectItem value="Monthly">Monthly</SelectItem>
             <SelectItem value="Daily">Daily</SelectItem>
-            <SelectItem value="Hourly">Hourly</SelectItem>
           </SelectContent>
         </Select>
 

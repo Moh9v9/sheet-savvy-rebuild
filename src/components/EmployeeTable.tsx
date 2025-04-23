@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { readEmployees } from "@/services/googleSheets";
@@ -23,7 +22,7 @@ export default function EmployeeTable() {
     search: "",
     status: "All",
     project: "All Projects",
-    paymentType: "All",
+    paymentType: "All",  // Keeping this as "All" for consistency
     jobTitle: "All Job Titles",
     sponsorship: "All Sponsors"
   });

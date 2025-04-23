@@ -5,7 +5,7 @@ export type EmployeeFormValues = {
   project: string;
   location: string;
   jobTitle: string;
-  paymentType: "Monthly" | "Daily";
+  paymentType: "Monthly" | "Daily";  // Removed "Hourly"
   rateOfPayment: string;
   sponsorship: "YDM co" | "YDM est" | "Outside";
   status: "Active" | "Archived";
