@@ -4,7 +4,7 @@ import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/types/employee";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { CircleDot, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import AttendanceDetailDrawer from "./AttendanceDetailDrawer";
 import EditAttendanceModal from "./EditAttendanceModal";
 import DeleteAttendanceDialog from "./DeleteAttendanceDialog";
@@ -19,6 +19,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
+import { AttendanceStatusDot } from "./components/AttendanceStatusDot";
+import { AttendanceStatusBadge } from "./components/AttendanceStatusBadge";
 
 interface AttendanceTableProps {
   attendanceRecords: Attendance[];
@@ -84,31 +86,10 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
     setDeleteDialogOpen(true);
   };
 
-  const handleEditSuccess = async () => {
-    // This will be handled by the parent component through onEdit
-    setEditModalOpen(false);
-  };
-
-  const handleDeleteSuccess = async () => {
-    // This will be handled by the parent component through onDelete
-    setDeleteDialogOpen(false);
+  const handleStatusChange = async (record: Attendance, newStatus: string) => {
+    await onEdit(record.id, { status: newStatus });
   };
   
-  const getStatusBadgeColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'present':
-        return 'bg-green-100 text-green-800';
-      case 'absent':
-        return 'bg-red-100 text-red-800';
-      case 'late':
-        return 'bg-orange-100 text-orange-800';
-      case 'leave':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -212,19 +193,20 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
                   >
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        <CircleDot 
-                          className={`h-3 w-3 ${record.status === 'present' ? 'text-green-500' : 
-                                              record.status === 'absent' ? 'text-red-500' : 
-                                              record.status === 'late' ? 'text-orange-500' : 'text-blue-500'}`} 
+                        <AttendanceStatusDot 
+                          status={record.status} 
+                          onChange={(newStatus) => handleStatusChange(record, newStatus)}
+                          showToggle
                         />
                         {record.fullName}
                       </div>
                     </TableCell>
                     <TableCell>{safeFormatDate(record.date)}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(record.status)}`}>
-                        {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                      </span>
+                      <AttendanceStatusBadge 
+                        status={record.status}
+                        onChange={(newStatus) => handleStatusChange(record, newStatus)}
+                      />
                     </TableCell>
                     <TableCell>{record.start_time || "N/A"}</TableCell>
                     <TableCell>{record.end_time || "N/A"}</TableCell>
