@@ -3,12 +3,14 @@ import React from "react";
 import { CircleDot } from "lucide-react";
 
 interface AttendanceStatusDotProps {
-  status: string;
+  status: string | null | undefined;
 }
 
 export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ status }) => {
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
+  const getStatusColor = (status: string | null | undefined) => {
+    const safeStatus = typeof status === 'string' ? status.toLowerCase() : 'default';
+
+    switch (safeStatus) {
       case 'present':
         return 'text-green-500';
       case 'absent':
