@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/services/googleSheets";
@@ -14,7 +15,6 @@ interface AttendanceTableProps {
   onEdit: (date: string, employeeId: string, data: Partial<Attendance>) => Promise<void>;
   onDelete: (date: string, employeeId: string) => Promise<void>;
   isLoading?: boolean;
-  defaultDateFilter?: Date;
 }
 
 const AttendanceTable: React.FC<AttendanceTableProps> = ({
@@ -22,16 +22,13 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
   employees,
   onEdit,
   onDelete,
-  isLoading = false,
-  defaultDateFilter
+  isLoading = false
 }) => {
   const {
     searchQuery,
     setSearchQuery,
     statusFilter,
     setStatusFilter,
-    dateFilter,
-    setDateFilter,
     selectedAttendance,
     setSelectedAttendance,
     detailsOpen,
@@ -41,7 +38,7 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
     deleteDialogOpen,
     setDeleteDialogOpen,
     filteredAttendance
-  } = useAttendanceTable(attendanceRecords, defaultDateFilter);
+  } = useAttendanceTable(attendanceRecords);
 
   const handleRowClick = (attendance: Attendance) => {
     setSelectedAttendance(attendance);
@@ -68,10 +65,6 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
     setDeleteDialogOpen(false);
   };
 
-  const handleUpdateAttendance = async (date: string, employeeId: string, data: Partial<Attendance>) => {
-    await onEdit(date, employeeId, data);
-  };
-
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -80,8 +73,6 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
           setSearchQuery={setSearchQuery}
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
         />
         
         <div className="rounded-md border">

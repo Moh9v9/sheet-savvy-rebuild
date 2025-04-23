@@ -1,11 +1,10 @@
+
 import { useState, useMemo } from "react";
 import { Attendance } from "@/services/googleSheets";
-import { format, isValid, parseISO } from "date-fns";
 
-export const useAttendanceTable = (attendanceRecords: Attendance[], defaultDateFilter?: Date) => {
+export const useAttendanceTable = (attendanceRecords: Attendance[]) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [dateFilter, setDateFilter] = useState<Date | undefined>(defaultDateFilter);
   const [selectedAttendance, setSelectedAttendance] = useState<Attendance | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -27,22 +26,14 @@ export const useAttendanceTable = (attendanceRecords: Attendance[], defaultDateF
       records = records.filter((record) => record.status === statusFilter);
     }
     
-    // Filter by date - now using the default date filter if provided
-    if (dateFilter) {
-      const filterDateStr = format(dateFilter, "yyyy-MM-dd");
-      records = records.filter((record) => record.date === filterDateStr);
-    }
-    
     return records;
-  }, [attendanceRecords, searchQuery, statusFilter, dateFilter]);
+  }, [attendanceRecords, searchQuery, statusFilter]);
 
   return {
     searchQuery,
     setSearchQuery,
     statusFilter,
     setStatusFilter,
-    dateFilter,
-    setDateFilter,
     selectedAttendance,
     setSelectedAttendance,
     detailsOpen,

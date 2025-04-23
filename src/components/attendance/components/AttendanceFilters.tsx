@@ -2,15 +2,12 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { AttendanceStatusFilter } from "./AttendanceStatusFilter";
-import { AttendanceDatePicker } from "./AttendanceDatePicker";
 
 interface AttendanceFiltersProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   statusFilter: string;
   setStatusFilter: (status: string) => void;
-  dateFilter: Date | undefined;
-  setDateFilter: (date: Date | undefined) => void;
 }
 
 export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
@@ -18,8 +15,6 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
   setSearchQuery,
   statusFilter,
   setStatusFilter,
-  dateFilter,
-  setDateFilter,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row gap-3 justify-between">
@@ -34,11 +29,6 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
         <AttendanceStatusFilter 
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
-        />
-        
-        <AttendanceDatePicker 
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
         />
       </div>
     </div>
