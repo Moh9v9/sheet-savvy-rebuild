@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
@@ -14,12 +13,14 @@ interface AttendanceTableRowProps {
   record: Attendance;
   onRowClick: (record: Attendance) => void;
   onEdit: (record: Attendance, event: React.MouseEvent) => void;
+  onDelete: (record: Attendance, event: React.MouseEvent) => void;
 }
 
 export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   record,
   onRowClick,
   onEdit,
+  onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(record);
