@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { readEmployees, Employee } from "@/services/googleSheets";
+import { readEmployees } from "@/services/googleSheets";
+import { Employee } from "@/types/employee";
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
 } from "@/components/ui/table";
@@ -10,7 +11,6 @@ import { Search, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import EditEmployeeModal from "./EditEmployeeModal";
-import { Employee } from "@/types/employee";
 
 const statusOptions = ["All", "Active", "Archived"];
 

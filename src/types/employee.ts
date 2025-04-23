@@ -19,7 +19,7 @@ export type Employee = EmployeeFormValues & {
 
 export type EmployeeInput = EmployeeFormValues & {
   id: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 };
 

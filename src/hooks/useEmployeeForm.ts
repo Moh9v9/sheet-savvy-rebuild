@@ -23,35 +23,38 @@ export const useEmployeeForm = ({
       project: employee?.project ?? "",
       location: employee?.location ?? "",
       jobTitle: employee?.jobTitle ?? "",
-      paymentType: employee?.paymentType as "Monthly" | "Daily" ?? "Monthly",
+      paymentType: employee?.paymentType ?? "Monthly",
       rateOfPayment: employee?.rateOfPayment?.toString() ?? "",
-      sponsorship: employee?.sponsorship as "YDM co" | "YDM est" | "Outside" ?? "YDM co",
-      status: employee?.status as "Active" | "Archived" ?? "Active"
+      sponsorship: employee?.sponsorship ?? "YDM co",
+      status: employee?.status ?? "Active"
     }
   });
 
   const onSubmit = async (values: EmployeeFormValues) => {
     try {
+      const currentDate = new Date().toISOString().slice(0, 10);
+      
       if (employee?.id) {
         // Update existing employee
-        const response = await updateEmployee(employee.id, {
+        const updateData: EmployeeInput = {
           ...values,
           id: employee.id,
-          updated_at: new Date().toISOString().slice(0, 10)
-        } as EmployeeInput);
+          created_at: employee.created_at,
+          updated_at: currentDate
+        };
         
-        console.log("Employee update response:", response);
+        await updateEmployee(employee.id, updateData);
         toast.success("Employee updated successfully!");
       } else {
         // Add new employee
-        const response = await addEmployee({
+        const newEmployee: EmployeeInput = {
           id: uuidv4(),
           ...values,
-          created_at: new Date().toISOString().slice(0, 10),
-          updated_at: ""
-        } as EmployeeInput);
+          created_at: currentDate,
+          updated_at: currentDate
+        };
         
-        console.log("Employee add response:", response);
+        await addEmployee(newEmployee);
         toast.success("Employee added successfully!");
         form.reset();
       }

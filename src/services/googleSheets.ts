@@ -1,5 +1,5 @@
 // src/services/googleSheets.ts
-import { Employee, EmployeeFormValues } from "@/types/employee";
+import { Employee, EmployeeInput } from "@/types/employee";
 
 // روابط الـ n8n Webhook
 const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-employees";
@@ -34,7 +34,7 @@ export async function readEmployees(): Promise<Employee[]> {
   return [];
 }
 
-export async function addEmployee(employeeData: Employee): Promise<any> {
+export async function addEmployee(employeeData: EmployeeInput): Promise<any> {
   try {
     const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
       method: "POST",
@@ -55,7 +55,7 @@ export async function addEmployee(employeeData: Employee): Promise<any> {
   }
 }
 
-export async function updateEmployee(id: string, employeeData: Partial<EmployeeFormValues>): Promise<any> {
+export async function updateEmployee(id: string, employeeData: EmployeeInput): Promise<any> {
   try {
     const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
       method: "POST",
