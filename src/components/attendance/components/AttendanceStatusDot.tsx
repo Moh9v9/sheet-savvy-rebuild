@@ -7,18 +7,11 @@ interface AttendanceStatusDotProps {
 }
 
 export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ status }) => {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'present':
-        return 'text-green-500';
-      case 'absent':
-        return 'text-red-500';
-      case 'late':
-        return 'text-orange-500';
-      default:
-        return 'text-blue-500';
-    }
-  };
-
-  return <CircleDot className={`h-3 w-3 ${getStatusColor(status)}`} />;
+  const isPresent = status.toLowerCase() === 'present';
+  
+  return (
+    <CircleDot 
+      className={`h-3 w-3 ${isPresent ? 'text-green-500' : 'text-red-500'}`} 
+    />
+  );
 };
