@@ -2,7 +2,6 @@
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/services/googleSheets";
-import { AttendanceFilters } from "./components/AttendanceFilters";
 import { AttendanceTableContent } from "./components/AttendanceTableContent";
 import AttendanceDetailDrawer from "./AttendanceDetailDrawer";
 import EditAttendanceModal from "./EditAttendanceModal";
@@ -25,10 +24,6 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
   isLoading = false
 }) => {
   const {
-    searchQuery,
-    setSearchQuery,
-    statusFilter,
-    setStatusFilter,
     selectedAttendance,
     setSelectedAttendance,
     detailsOpen,
@@ -67,23 +62,14 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
 
   return (
     <>
-      <div className="flex flex-col gap-4">
-        <AttendanceFilters
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
+      <div className="rounded-md border">
+        <AttendanceTableContent
+          isLoading={isLoading}
+          filteredAttendance={attendanceRecords}
+          onRowClick={handleRowClick}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
-        
-        <div className="rounded-md border">
-          <AttendanceTableContent
-            isLoading={isLoading}
-            filteredAttendance={filteredAttendance}
-            onRowClick={handleRowClick}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </div>
       </div>
       
       <AttendanceDetailDrawer
