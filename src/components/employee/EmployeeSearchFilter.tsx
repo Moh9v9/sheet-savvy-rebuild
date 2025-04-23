@@ -72,6 +72,7 @@ export function EmployeeSearchFilter({
         <h2 className="text-2xl font-semibold text-gradient-primary">
           Employees
         </h2>
+        {/* Name/Iqama Search - Matches first column */}
         <div className="relative w-full md:w-64">
           <span className="absolute left-3 top-2.5 text-gray-400 pointer-events-none">
             <Search className="w-5 h-5" />
@@ -88,20 +89,7 @@ export function EmployeeSearchFilter({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-        <Select
-          value={filters.status}
-          onValueChange={(value) => onFilterChange("status", value)}
-        >
-          <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Statuses</SelectItem>
-            <SelectItem value="Active">Active</SelectItem>
-            <SelectItem value="Archived">Archived</SelectItem>
-          </SelectContent>
-        </Select>
-
+        {/* Project - Matches third column */}
         <Select
           value={filters.project}
           onValueChange={(value) => onFilterChange("project", value)}
@@ -119,21 +107,7 @@ export function EmployeeSearchFilter({
           </SelectContent>
         </Select>
 
-        <Select
-          value={filters.paymentType}
-          onValueChange={(value) => onFilterChange("paymentType", value)}
-        >
-          <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Payment Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All Payment Types</SelectItem>
-            <SelectItem value="Monthly">Monthly</SelectItem>
-            <SelectItem value="Daily">Daily</SelectItem>
-            <SelectItem value="Hourly">Hourly</SelectItem>
-          </SelectContent>
-        </Select>
-
+        {/* Job Title - Matches fifth column */}
         <Select
           value={filters.jobTitle}
           onValueChange={(value) => onFilterChange("jobTitle", value)}
@@ -151,6 +125,23 @@ export function EmployeeSearchFilter({
           </SelectContent>
         </Select>
 
+        {/* Payment Type - Matches sixth column */}
+        <Select
+          value={filters.paymentType}
+          onValueChange={(value) => onFilterChange("paymentType", value)}
+        >
+          <SelectTrigger className="bg-background">
+            <SelectValue placeholder="Payment Type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All Payment Types</SelectItem>
+            <SelectItem value="Monthly">Monthly</SelectItem>
+            <SelectItem value="Daily">Daily</SelectItem>
+            <SelectItem value="Hourly">Hourly</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Sponsorship - Matches eighth column */}
         <Select
           value={filters.sponsorship}
           onValueChange={(value) => onFilterChange("sponsorship", value)}
@@ -165,6 +156,21 @@ export function EmployeeSearchFilter({
                 {sponsor}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        {/* Status - Matches ninth column */}
+        <Select
+          value={filters.status}
+          onValueChange={(value) => onFilterChange("status", value)}
+        >
+          <SelectTrigger className="bg-background">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All Statuses</SelectItem>
+            <SelectItem value="Active">Active</SelectItem>
+            <SelectItem value="Archived">Archived</SelectItem>
           </SelectContent>
         </Select>
 
