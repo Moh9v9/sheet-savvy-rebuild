@@ -75,7 +75,7 @@ export function EmployeeSearchFilter({
           <h2 className="text-2xl font-semibold text-gradient-primary">
             Employees List
           </h2>
-          <ExportEmployeesButton employees={filteredEmployees} />
+          <ExportEmployeesButton employees={filteredEmployees} filters={filters} />
         </div>
         <div className="relative w-full md:w-64">
           <span className="absolute left-3 top-2.5 text-gray-400 pointer-events-none">
