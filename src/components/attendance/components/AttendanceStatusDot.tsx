@@ -1,42 +1,30 @@
 
 import React from "react";
 import { CircleDot } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 
 interface AttendanceStatusDotProps {
-  status: string | undefined | null;
-  onChange?: (newStatus: string) => void;
-  showToggle?: boolean;
-  readOnly?: boolean;
+  status: string;
 }
 
-export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ 
-  status, 
-  onChange,
-  showToggle = false,
-  readOnly = false
-}) => {
-  // Handle undefined or null status values
-  const statusStr = typeof status === 'string' ? status : '';
-  const isPresent = statusStr.toLowerCase() === 'present';
-  
-  const handleToggle = () => {
-    if (!readOnly && onChange) {
-      onChange(isPresent ? 'absent' : 'present');
+export const AttendanceStatusDot: React.FC<AttendanceStatusDotProps> = ({ status }) => {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'present':
+        return 'text-green-500';
+      case 'absent':
+        return 'text-red-500';
+      case 'late':
+        return 'text-orange-500';
+      case 'leave':
+        return 'text-blue-500';
+      default:
+        return 'text-gray-500';
     }
   };
-  
+
   return (
-    <div className="flex items-center gap-2">
-      <CircleDot className={`h-3 w-3 ${isPresent ? 'text-green-500' : 'text-red-500'}`} />
-      {showToggle && (
-        <Switch 
-          checked={isPresent} 
-          onCheckedChange={handleToggle}
-          disabled={readOnly}
-          className="scale-75"
-        />
-      )}
+    <div className="flex items-center justify-center">
+      <CircleDot className={`h-3 w-3 ${getStatusColor(status)}`} />
     </div>
   );
 };
