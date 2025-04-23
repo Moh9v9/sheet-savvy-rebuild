@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
 import AddAttendanceModal from "@/components/attendance/AddAttendanceModal";
 import ExportAttendanceButton from "@/components/attendance/ExportAttendanceButton";
+import { Attendance } from "@/services/googleSheets";
 
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
