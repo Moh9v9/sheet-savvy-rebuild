@@ -5,7 +5,6 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Check, Loader } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AttendanceStatus } from "@/types/attendance";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
@@ -51,9 +50,15 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   const isAttendancePresent = editedData.status === 'present' || editedData.status === 'حاضر';
 
   return (
-    <TableRow onClick={() => !isEditing && onRowClick(record)}>
+    <TableRow>
       <TableCell className="font-medium">
-        {record.fullName}
+        <Button
+          variant="link"
+          className="p-0 h-auto font-normal hover:underline"
+          onClick={() => onRowClick(record)}
+        >
+          {record.fullName}
+        </Button>
       </TableCell>
       <TableCell>{record.date}</TableCell>
       <TableCell>
