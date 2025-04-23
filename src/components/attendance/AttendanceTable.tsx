@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { format, isValid, parseISO } from "date-fns";
 import { Attendance } from "@/services/googleSheets";
@@ -287,4 +286,3 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
 };
 
 export default AttendanceTable;
-
