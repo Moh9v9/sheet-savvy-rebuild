@@ -1,11 +1,11 @@
 
 import React from "react";
-import { format, isValid, parseISO } from "date-fns";
 import { Attendance } from "@/services/googleSheets";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AttendanceStatusBadge } from "./AttendanceStatusBadge";
 import { AttendanceActionButtons } from "./AttendanceActionButtons";
 import { AttendanceStatusDot } from "./AttendanceStatusDot";
+import { safeFormatDate } from "@/utils/dateUtils";
 
 interface AttendanceTableRowProps {
   record: Attendance;
@@ -20,15 +20,6 @@ export const AttendanceTableRow: React.FC<AttendanceTableRowProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const safeFormatDate = (dateString: string) => {
-    try {
-      const date = parseISO(dateString);
-      return isValid(date) ? format(date, "MMM d, yyyy") : "Invalid date";
-    } catch (error) {
-      return "Invalid date";
-    }
-  };
-
   return (
     <TableRow 
       onClick={() => onRowClick(record)}
