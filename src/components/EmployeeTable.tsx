@@ -35,11 +35,14 @@ export default function EmployeeTable() {
       rows = rows.filter(
         (e) =>
           e.fullName?.toLowerCase().includes(term) ||
-          e.iqamaNo?.toLowerCase().includes(term)
+          e.iqamaNo?.toString().toLowerCase().includes(term)
       );
     }
     return rows;
   }, [data, search, status]);
+
+  console.log("API response data:", data);
+  console.log("Filtered employees:", filteredEmployees);
 
   return (
     <div className="w-full mx-auto max-w-7xl bg-card/80 rounded-xl p-6 shadow-lg glass-morphism transition">

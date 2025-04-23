@@ -1,3 +1,4 @@
+
 // src/services/googleSheets.ts
 
 // روابط الـ n8n Webhook
@@ -37,7 +38,15 @@ export async function readEmployees(): Promise<Employee[]> {
     body: JSON.stringify({ operation: "read" }),
   });
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  
+  // Handle different response formats
+  if (Array.isArray(data)) {
+    return data;
+  } else if (data && typeof data === 'object') {
+    // If response is a single employee object, convert to array
+    return [data];
+  }
+  return [];
 }
 
 export async function addEmployee(employeeData: Employee): Promise<any> {
@@ -75,7 +84,15 @@ export async function readUsers(): Promise<GoogleSheetsUser[]> {
     body: JSON.stringify({ operation: "read" }),
   });
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  
+  // Handle different response formats
+  if (Array.isArray(data)) {
+    return data;
+  } else if (data && typeof data === 'object') {
+    // If response is a single user object, convert to array
+    return [data];
+  }
+  return [];
 }
 
 export async function addUser(userData: GoogleSheetsUser): Promise<any> {
@@ -114,6 +131,9 @@ export async function getUserByEmailAndPassword(email: string, password: string)
   const data = await res.json();
   if (Array.isArray(data) && data.length > 0) {
     return data[0];
+  } else if (data && typeof data === 'object') {
+    // If the response is a single user object
+    return data;
   }
   return null;
 }
