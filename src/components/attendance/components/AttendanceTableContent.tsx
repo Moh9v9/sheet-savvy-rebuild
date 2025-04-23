@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Attendance } from "@/services/googleSheets";
@@ -8,7 +9,6 @@ interface AttendanceTableContentProps {
   filteredAttendance: Attendance[];
   onRowClick: (attendance: Attendance) => void;
   onEdit: (attendance: Attendance, event: React.MouseEvent) => void;
-  onDelete: (attendance: Attendance, event: React.MouseEvent) => void;
 }
 
 export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
@@ -16,7 +16,6 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
   filteredAttendance,
   onRowClick,
   onEdit,
-  onDelete,
 }) => {
   return (
     <Table>
@@ -29,19 +28,18 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
           <TableHead>End Time</TableHead>
           <TableHead>Overtime</TableHead>
           <TableHead>Note</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {isLoading ? (
           <TableRow>
-            <td colSpan={8} className="text-center py-8">
+            <td colSpan={7} className="text-center py-8">
               Loading attendance data...
             </td>
           </TableRow>
         ) : filteredAttendance.length === 0 ? (
           <TableRow>
-            <td colSpan={8} className="text-center py-8">
+            <td colSpan={7} className="text-center py-8">
               No attendance records found
             </td>
           </TableRow>
@@ -52,7 +50,6 @@ export const AttendanceTableContent: React.FC<AttendanceTableContentProps> = ({
               record={record}
               onRowClick={onRowClick}
               onEdit={onEdit}
-              onDelete={onDelete}
             />
           ))
         )}
