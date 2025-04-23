@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
   return (
-    <header className="bg-white shadow-sm border-b py-3 px-4 md:px-6 flex items-center justify-between z-10">
+    <header className="bg-white shadow-sm border-b py-3 px-4 md:px-6 flex items-center justify-between">
       <div className="flex items-center">
         <Button
           variant="ghost"
