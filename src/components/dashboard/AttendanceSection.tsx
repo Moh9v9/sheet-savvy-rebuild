@@ -1,10 +1,15 @@
-
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AttendanceTable from "@/components/attendance/AttendanceTable";
 import { Attendance, Employee } from "@/services/googleSheets";
 import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface AttendanceSectionProps {
   attendanceRecords: Attendance[];
@@ -82,9 +87,28 @@ const AttendanceSection = ({
         >
           <ArrowRight className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium">
-          {format(selectedDate, "EEEE, MMMM d, yyyy")}
-        </span>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "justify-start text-left font-normal",
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {format(selectedDate, "EEEE, MMMM d, yyyy")}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && onDateChange(date)}
+              initialFocus
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <AttendanceTable
