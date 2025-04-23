@@ -17,34 +17,46 @@ export type GoogleSheetsUser = {
   firstName: string;
   lastName: string;
   role: string;
-  name: string; // Added name property
+  name?: string; // Optional name property
 };
 
 // ATTENDANCE METHODS
 
-// Read all attendance records
-export async function readAttendance(): Promise<Attendance[]> {
+// Read attendance records with optional date filter
+export async function readAttendance(date?: string): Promise<Attendance[]> {
   const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "read" }),
+    body: JSON.stringify({ 
+      operation: "read",
+      // If date is provided, include it in the request for server-side filtering
+      ...(date && { date }) 
+    }),
   });
+  
   const data = await res.json();
   
-  // Log the status values to understand what's being received
-  console.log('Attendance Data Status Values:', 
-    Array.isArray(data) 
-      ? data.map(item => item.status) 
-      : data?.status
-  );
+  // Map boolean status to string status
+  const processedData = Array.isArray(data) ? data.map(item => ({
+    ...item,
+    status: processAttendanceStatus(item.status)
+  })) : [];
   
-  if (Array.isArray(data)) return data;
-  if (data && typeof data === 'object') return [data];
-  return [];
+  console.log('Processed Attendance Data:', processedData);
+  
+  return processedData;
+}
+
+// Helper function to process status values
+function processAttendanceStatus(status: any): AttendanceType['status'] {
+  if (status === true) return 'present';
+  if (status === false) return 'absent';
+  return status as AttendanceType['status'];
 }
 
 // Add a new attendance record
 export async function addAttendance(data: Omit<Attendance, "created_at" | "updated_at">): Promise<Attendance> {
+  // Check if an attendance record already exists for this employee and date
   const now = new Date().toISOString();
   const attendanceData = {
     ...data,
@@ -55,20 +67,35 @@ export async function addAttendance(data: Omit<Attendance, "created_at" | "updat
   const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "create", data: attendanceData }),
+    body: JSON.stringify({ 
+      operation: "create", 
+      data: attendanceData,
+      // Include explicit lookupKeys for the server to prevent duplicates
+      lookupKeys: {
+        date: data.date,
+        employee_id: data.employee_id
+      }
+    }),
   });
   
   return await res.json();
 }
 
-// Update an existing attendance record
-export async function updateAttendance(id: string, data: Partial<Attendance>): Promise<Attendance> {
+// Update an existing attendance record by date and employee_id
+export async function updateAttendance(
+  date: string, 
+  employee_id: string, 
+  data: Partial<Attendance>
+): Promise<Attendance> {
   const res = await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ 
       operation: "update", 
-      id, 
+      lookupKeys: {
+        date,
+        employee_id
+      },
       data: {
         ...data,
         updated_at: new Date().toISOString()
@@ -79,12 +106,18 @@ export async function updateAttendance(id: string, data: Partial<Attendance>): P
   return await res.json();
 }
 
-// Delete an attendance record
-export async function deleteAttendance(id: string): Promise<void> {
+// Delete an attendance record by date and employee_id
+export async function deleteAttendance(date: string, employee_id: string): Promise<void> {
   await fetch(N8N_ATTENDANCE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "delete", id }),
+    body: JSON.stringify({ 
+      operation: "delete", 
+      lookupKeys: {
+        date,
+        employee_id
+      }
+    }),
   });
 }
 

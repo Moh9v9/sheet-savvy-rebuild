@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Attendance } from "@/services/googleSheets";
 import { Employee } from "@/services/googleSheets";
@@ -11,8 +12,8 @@ import { useAttendanceTable } from "./hooks/useAttendanceTable";
 interface AttendanceTableProps {
   attendanceRecords: Attendance[];
   employees: Employee[];
-  onEdit: (id: string, data: Partial<Attendance>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  onEdit: (date: string, employeeId: string, data: Partial<Attendance>) => Promise<void>;
+  onDelete: (date: string, employeeId: string) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -64,6 +65,10 @@ const AttendanceTable: React.FC<AttendanceTableProps> = ({
 
   const handleDeleteSuccess = async () => {
     setDeleteDialogOpen(false);
+  };
+
+  const handleUpdateAttendance = async (date: string, employeeId: string, data: Partial<Attendance>) => {
+    await onEdit(date, employeeId, data);
   };
 
   return (

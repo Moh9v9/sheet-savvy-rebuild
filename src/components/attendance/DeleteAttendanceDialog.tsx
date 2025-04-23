@@ -18,7 +18,7 @@ interface DeleteAttendanceDialogProps {
   attendance: Attendance | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (date: string, employeeId: string) => Promise<void>;
   onSuccess: () => void;
 }
 
@@ -33,7 +33,8 @@ const DeleteAttendanceDialog: React.FC<DeleteAttendanceDialogProps> = ({
     if (!attendance) return;
     
     try {
-      await onDelete(attendance.id);
+      // Delete by date and employee_id instead of just id
+      await onDelete(attendance.date, attendance.employee_id);
       toast.success("Attendance record deleted successfully");
       onSuccess();
     } catch (error) {

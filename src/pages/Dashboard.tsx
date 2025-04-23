@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useAttendanceData } from "@/hooks/useAttendanceData";
+import { format } from "date-fns";
 import { Attendance } from "@/services/googleSheets";
 import AddAttendanceModal from "@/components/attendance/AddAttendanceModal";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -24,14 +25,15 @@ const Dashboard = () => {
 
   const handleAddSuccess = () => {
     setModalOpen(false);
+    refreshData();
   };
 
-  const handleEditAttendance = async (id: string, data: Partial<Attendance>) => {
-    await editAttendanceRecord(id, data);
+  const handleEditAttendance = async (date: string, employeeId: string, data: Partial<Attendance>) => {
+    await editAttendanceRecord(date, employeeId, data);
   };
 
-  const handleDeleteAttendance = async (id: string) => {
-    await deleteAttendanceRecord(id);
+  const handleDeleteAttendance = async (date: string, employeeId: string) => {
+    await deleteAttendanceRecord(date, employeeId);
   };
 
   const handleDateChange = (date: Date) => {
@@ -58,6 +60,7 @@ const Dashboard = () => {
         onOpenChange={setModalOpen}
         employees={employees}
         onSuccess={handleAddSuccess}
+        initialDate={selectedDate}
       />
     </div>
   );

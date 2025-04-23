@@ -10,8 +10,8 @@ interface AttendanceSectionProps {
   attendanceRecords: Attendance[];
   employees: Employee[];
   loading: boolean;
-  onEdit: (id: string, data: Partial<Attendance>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  onEdit: (date: string, employeeId: string, data: Partial<Attendance>) => Promise<void>;
+  onDelete: (date: string, employeeId: string) => Promise<void>;
   onAddClick: () => void;
   selectedDate: Date;
   onDateChange: (date: Date) => void;

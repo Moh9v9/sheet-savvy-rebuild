@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -41,19 +42,19 @@ export const useAttendanceData = (selectedDate: Date = new Date()) => {
       try {
         setLoading(true);
         
+        // Format the selected date as YYYY-MM-DD for API filtering
+        const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+        
+        // Load employees and attendance for the selected date in parallel
         const [employeesData, attendanceData] = await Promise.all([
           readEmployees(),
-          readAttendance()
+          readAttendance(selectedDateStr) // Pass the formatted date to filter server-side
         ]);
         
-        const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
-        const filteredAttendance = attendanceData.filter(
-          record => record.date === selectedDateStr
-        );
-        
         setEmployees(employeesData);
-        setAttendanceRecords(filteredAttendance);
+        setAttendanceRecords(attendanceData);
         
+        // Calculate attendance statistics for the selected date
         const calculatedStats: AttendanceStats = {
           present: 0,
           absent: 0,
@@ -62,7 +63,7 @@ export const useAttendanceData = (selectedDate: Date = new Date()) => {
           total: employeesData.length
         };
         
-        filteredAttendance.forEach(record => {
+        attendanceData.forEach(record => {
           if (record.status === 'present' || record.status === 'حاضر') calculatedStats.present++;
           else if (record.status === 'absent' || record.status === 'غائب') calculatedStats.absent++;
           else if (record.status === 'late' || record.status === 'متأخر') calculatedStats.late++;
@@ -96,9 +97,13 @@ export const useAttendanceData = (selectedDate: Date = new Date()) => {
   };
 
   // Edit an attendance record
-  const editAttendanceRecord = async (id: string, data: Partial<Attendance>) => {
+  const editAttendanceRecord = async (
+    date: string,
+    employee_id: string,
+    data: Partial<Attendance>
+  ) => {
     try {
-      await updateAttendance(id, data);
+      await updateAttendance(date, employee_id, data);
       toast.success("Attendance record updated successfully");
       refreshData();
       return true;
@@ -110,9 +115,9 @@ export const useAttendanceData = (selectedDate: Date = new Date()) => {
   };
 
   // Delete an attendance record
-  const deleteAttendanceRecord = async (id: string) => {
+  const deleteAttendanceRecord = async (date: string, employee_id: string) => {
     try {
-      await deleteAttendance(id);
+      await deleteAttendance(date, employee_id);
       toast.success("Attendance record deleted successfully");
       refreshData();
       return true;

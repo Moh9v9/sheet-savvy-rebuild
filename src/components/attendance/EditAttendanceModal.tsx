@@ -127,7 +127,11 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
       // Format the date as a string (YYYY-MM-DD)
       const formattedDate = format(data.date, "yyyy-MM-dd");
       
-      // Update attendance record
+      // Store the original date and employee_id for lookup
+      const originalDate = attendance.date;
+      const originalEmployeeId = attendance.employee_id;
+      
+      // Prepare update data
       const attendanceData: Partial<Attendance> = {
         employee_id: data.employee_id,
         fullName: selectedEmployee.fullName,
@@ -137,10 +141,10 @@ const EditAttendanceModal: React.FC<EditAttendanceModalProps> = ({
         end_time: data.end_time || "",
         overtime: data.overtime || "",
         note: data.note || "",
-        updated_at: new Date().toISOString(),
       };
       
-      await updateAttendance(attendance.id, attendanceData);
+      // Update using original date and employee_id as lookup keys
+      await updateAttendance(originalDate, originalEmployeeId, attendanceData);
       
       toast.success("Attendance record updated successfully");
       onOpenChange(false);

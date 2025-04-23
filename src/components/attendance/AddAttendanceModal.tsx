@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Employee } from "@/services/googleSheets";
-import { Attendance, addAttendance } from "@/services/googleSheets";
+import { Attendance } from "@/services/googleSheets";
 import { AttendanceStatus } from "@/types/attendance";
 import {
   Dialog,
@@ -59,6 +59,7 @@ interface AddAttendanceModalProps {
   onOpenChange: (open: boolean) => void;
   employees: Employee[];
   onSuccess: () => void;
+  initialDate?: Date; // Allow passing an initial date
 }
 
 const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
@@ -66,11 +67,12 @@ const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
   onOpenChange,
   employees,
   onSuccess,
+  initialDate,
 }) => {
   const form = useForm<AttendanceFormValues>({
     resolver: zodResolver(attendanceSchema),
     defaultValues: {
-      date: new Date(),
+      date: initialDate || new Date(),
       status: "present",
       start_time: "",
       end_time: "",
@@ -78,6 +80,13 @@ const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
       note: "",
     },
   });
+
+  // Update form when initialDate changes
+  React.useEffect(() => {
+    if (initialDate) {
+      form.setValue("date", initialDate);
+    }
+  }, [initialDate, form]);
 
   const onSubmit = async (data: AttendanceFormValues) => {
     try {
@@ -105,6 +114,7 @@ const AddAttendanceModal: React.FC<AddAttendanceModalProps> = ({
         note: data.note || "",
       };
       
+      // Use the addAttendance service which now checks for duplicate date+employee
       await addAttendance(attendanceData);
       
       toast.success("Attendance record added successfully");
