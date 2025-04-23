@@ -34,8 +34,10 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
     onOpenChange: onClose
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     setIsSaving(true);
     try {
       await form.handleSubmit(onSubmit)();
@@ -66,7 +68,7 @@ export function EmployeeDetailsDrawer({ employee, open, onClose, onEmployeeDelet
             </Button>
           </SheetHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+          <form onSubmit={(e) => handleSubmit(e)} className="space-y-6 mt-4">
             <EmployeeFormFields form={form} isEditing={isEditing} />
 
             <div className="text-sm text-muted-foreground space-y-1">

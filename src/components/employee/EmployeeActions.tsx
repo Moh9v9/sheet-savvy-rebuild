@@ -9,7 +9,7 @@ interface EmployeeActionsProps {
   onEdit: () => void;
   onCancelEdit: () => void;
   onDelete: () => void;
-  onSubmit: () => void;
+  onSubmit: (e?: React.FormEvent) => void;  // Updated to accept an optional FormEvent
 }
 
 export function EmployeeActions({
@@ -42,7 +42,7 @@ export function EmployeeActions({
           >
             Cancel
           </Button>
-          <Button type="submit" onClick={onSubmit} disabled={isSaving}>
+          <Button type="submit" onClick={() => onSubmit()} disabled={isSaving}>
             <Save className="mr-2 h-4 w-4" />
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
