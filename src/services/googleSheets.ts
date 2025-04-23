@@ -1,25 +1,11 @@
 // src/services/googleSheets.ts
+import { Employee, EmployeeFormValues } from "@/types/employee";
 
 // روابط الـ n8n Webhook
 const N8N_EMPLOYEES_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-employees";
 const N8N_USERS_WEBHOOK = "https://n8n.moh9v9.com/webhook/get-users";
 
 // ====== [ أنواع البيانات ] ======
-export type Employee = {
-  id: string;
-  fullName: string;
-  iqamaNo: string;
-  project: string;
-  location: string;
-  jobTitle: string;
-  paymentType: string;
-  rateOfPayment: string;
-  sponsorship?: string;
-  status: string;
-  created_at?: string;
-  updated_at?: string;
-  [key: string]: any;
-};
 
 export type GoogleSheetsUser = {
   id: string;
@@ -69,7 +55,7 @@ export async function addEmployee(employeeData: Employee): Promise<any> {
   }
 }
 
-export async function updateEmployee(id: string, employeeData: Partial<Employee>): Promise<any> {
+export async function updateEmployee(id: string, employeeData: Partial<EmployeeFormValues>): Promise<any> {
   try {
     const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
       method: "POST",

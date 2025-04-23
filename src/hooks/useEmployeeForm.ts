@@ -1,6 +1,5 @@
-
 import { useForm } from "react-hook-form";
-import { EmployeeFormValues } from "@/types/employee";
+import { Employee, EmployeeFormValues } from "@/types/employee";
 import { updateEmployee } from "@/services/googleSheets";
 import { toast } from "sonner";
 
