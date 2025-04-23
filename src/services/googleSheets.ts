@@ -1,4 +1,3 @@
-
 // src/services/googleSheets.ts
 
 // روابط الـ n8n Webhook
@@ -70,13 +69,27 @@ export async function addEmployee(employeeData: Employee): Promise<any> {
   }
 }
 
-export async function updateEmployee(rowIndex: number, employeeData: Partial<Employee>): Promise<any> {
-  const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ operation: "update", rowIndex, ...employeeData }),
-  });
-  return res.json();
+export async function updateEmployee(id: string, employeeData: Partial<Employee>): Promise<any> {
+  try {
+    const res = await fetch(N8N_EMPLOYEES_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        operation: "update", 
+        id,
+        ...employeeData
+      }),
+    });
+    
+    if (res.ok) {
+      return { success: true };
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    throw error;
+  }
 }
 
 export async function deleteEmployee(rowIndex: number): Promise<any> {

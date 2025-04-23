@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { readEmployees, Employee } from "@/services/googleSheets";
@@ -7,16 +6,22 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
+import { Search, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import EditEmployeeModal from "./EditEmployeeModal";
 
 const statusOptions = ["All", "Active", "Archived"];
 
 export default function EmployeeTable() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["employees"],
     queryFn: readEmployees,
   });
+
+  // State for edit modal
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
   // Search & filter state
   const [search, setSearch] = useState("");
@@ -41,8 +46,14 @@ export default function EmployeeTable() {
     return rows;
   }, [data, search, status]);
 
-  console.log("API response data:", data);
-  console.log("Filtered employees:", filteredEmployees);
+  const handleEdit = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setEditModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    refetch();
+  };
 
   return (
     <div className="w-full mx-auto max-w-7xl bg-card/80 rounded-xl p-6 shadow-lg glass-morphism transition">
@@ -78,7 +89,7 @@ export default function EmployeeTable() {
           </div>
         </div>
       </div>
-      {/* Table */}
+
       {isLoading ? (
         <Skeleton className="h-72 w-full" />
       ) : error ? (
@@ -99,12 +110,13 @@ export default function EmployeeTable() {
                 <TableHead>Rate of Payment</TableHead>
                 <TableHead>Sponsorship</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {!filteredEmployees || filteredEmployees.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center text-muted-foreground">
                     No employees found.
                   </TableCell>
                 </TableRow>
@@ -131,6 +143,16 @@ export default function EmployeeTable() {
                         {emp.status}
                       </span>
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(emp)}
+                        className="size-8"
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
@@ -138,6 +160,13 @@ export default function EmployeeTable() {
           </Table>
         </div>
       )}
+
+      <EditEmployeeModal
+        open={isEditModalOpen}
+        onOpenChange={setEditModalOpen}
+        onSuccess={handleEditSuccess}
+        employee={selectedEmployee}
+      />
     </div>
   );
 }
